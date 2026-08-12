@@ -1,0 +1,2435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>黄磷电炉生产与经营综合分析报告（多期对比）</title>
+    <!-- ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js">
+    </script>
+    <!-- Chart.js + DataLabels 用于温度看板 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0/dist/chartjs-plugin-datalabels.min.js">
+    </script>
+    <style>
+        /* ===== 主报告样式（平板优化） ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #eef2f5;
+            font-family: '微软雅黑', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            padding: 16px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .report-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px 24px 35px;
+            border-radius: 4px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        .main-title {
+            font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
+            font-size: 24pt;
+            font-weight: bold;
+            text-align: center;
+            margin: 6pt 0 4pt;
+        }
+        .sub-title {
+            font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
+            font-size: 17pt;
+            text-align: center;
+            margin-bottom: 16px;
+            color: #2c5a6e;
+        }
+        .section-title {
+            font-family: '黑体', 'Microsoft YaHei', sans-serif;
+            font-weight: bold;
+            font-size: 19pt;
+            margin: 18px 0 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #aaa;
+        }
+        .subsection-title {
+            font-family: '黑体', 'Microsoft YaHei', sans-serif;
+            font-weight: bold;
+            font-size: 17pt;
+            margin: 14px 0 8px;
+        }
+        p {
+            text-indent: 2em;
+            margin: 0 0 8px;
+            text-align: justify;
+            line-height: 22pt;
+            font-size: 15pt;
+            font-family: '仿宋', 'FangSong', serif;
+        }
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            margin: 18px 0 10px;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            font-family: '微软雅黑', sans-serif;
+            font-size: 15pt;
+            padding: 10px 22px;
+            background: #e9ecef;
+            border: 1px solid #bdc4d0;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: bold;
+            min-height: 54px;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .tab-btn:active {
+            transform: scale(0.96);
+        }
+        .tab-btn.active {
+            background: #2c7da0;
+            color: #fff;
+            border-color: #2c7da0;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .dashboard-panel {
+            background: #f8f9fc;
+            border-radius: 16px;
+            padding: 16px 24px;
+            margin: 20px 0 25px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+            border: 1px solid #dce3ec;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 180px;
+        }
+        .control-group label {
+            font-family: '黑体', sans-serif;
+            font-size: 14pt;
+            font-weight: bold;
+            color: #1f3b4a;
+        }
+        select {
+            font-family: '微软雅黑', 'PingFang SC', sans-serif;
+            font-size: 14pt;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid #bdc4d0;
+            background: #fff;
+            cursor: pointer;
+            min-height: 48px;
+        }
+        .chart-card {
+            margin: 20px 0 15px;
+            background: #fff;
+            border-radius: 20px;
+            padding: 10px 5px 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        #chart1,
+        #chart2,
+        #chart3 {
+            width: 100%;
+            height: 480px;
+        }
+        .data-note {
+            font-size: 11pt;
+            color: #5f6c7a;
+            text-align: right;
+            border-top: 1px dashed #ccc;
+            padding-top: 6px;
+            margin-top: 6px;
+            font-family: '微软雅黑', sans-serif;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 15px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: '微软雅黑', 'PingFang SC', sans-serif;
+            font-size: 11pt;
+            min-width: 700px;
+        }
+        .data-table th {
+            font-family: '黑体', sans-serif;
+            background: #eef2f7;
+            border: 1px solid #9aaebf;
+            padding: 8px 6px;
+            text-align: center;
+        }
+        .data-table td {
+            border: 1px solid #9aaebf;
+            padding: 7px 6px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .table-note {
+            font-size: 10pt;
+            color: #4e6b7f;
+            margin-top: 6px;
+            font-family: '微软雅黑', sans-serif;
+        }
+        .insight-box {
+            background: #f0f4fa;
+            padding: 14px 20px;
+            border-left: 5px solid #2c7da0;
+            margin: 18px 0;
+            font-family: '微软雅黑', sans-serif;
+            font-size: 14pt;
+            line-height: 1.6;
+        }
+        .insight-comment {
+            background: #f0f7ff;
+            border-left: 6px solid #2c7da0;
+            padding: 12px 20px;
+            margin: 0 8px 12px 8px;
+            border-radius: 8px;
+            font-family: '微软雅黑', 'PingFang SC', sans-serif;
+            font-size: 14pt;
+            color: #1a3b4a;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            line-height: 1.7;
+        }
+        .insight-comment strong {
+            color: #1a5a7a;
+        }
+        .insight-comment .trend-up {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+        .insight-comment .trend-down {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+        .insight-comment .trend-flat {
+            color: #f5a623;
+            font-weight: bold;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin: 16px 8px;
+        }
+        .kpi-card {
+            background: #f8faff;
+            border-radius: 16px;
+            padding: 16px 12px;
+            text-align: center;
+            border-top: 4px solid #2c7da0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        .kpi-card .kpi-value {
+            font-size: 30px;
+            font-weight: 700;
+            color: #0b2b5c;
+            margin: 6px 0;
+        }
+        .kpi-card .kpi-label {
+            font-size: 14px;
+            color: #4a5a6e;
+        }
+        .kpi-card .kpi-trend {
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .kpi-card .kpi-trend.up {
+            color: #d32f2f;
+        }
+        .kpi-card .kpi-trend.down {
+            color: #2e7d32;
+        }
+        .kpi-card.gold {
+            border-top-color: #e67e22;
+        }
+        .kpi-card.green {
+            border-top-color: #2ecc71;
+        }
+        .kpi-card.purple {
+            border-top-color: #8e44ad;
+        }
+        .insight-badge {
+            background: #eef2ff;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border-left: 5px solid #1e3a5f;
+            margin: 12px 0;
+            font-size: 15pt;
+            text-indent: 0;
+            font-family: '微软雅黑', sans-serif;
+        }
+        .cost-list {
+            font-size: 16pt;
+            line-height: 1.8;
+            padding: 8px 16px;
+        }
+        .cost-list p {
+            text-indent: 0;
+            margin: 4px 0;
+        }
+        .highlight-red {
+            color: #b22222;
+            font-weight: 600;
+        }
+        .highlight-green {
+            color: #008000;
+            font-weight: 600;
+        }
+        .highlight-gold {
+            color: #e67e22;
+            font-weight: 600;
+        }
+        .bad-diff {
+            color: #008000;
+            font-weight: 700;
+            font-family: '黑体', 'SimHei', sans-serif;
+        }
+        .good-red {
+            color: #b22222;
+            font-weight: 600;
+        }
+        .cost-up {
+            color: #008000;
+            font-weight: 700;
+            font-family: '黑体', 'SimHei', sans-serif;
+        }
+        .cost-down {
+            color: #b22222;
+            font-weight: 600;
+        }
+        footer {
+            margin-top: 28px;
+            font-size: 11pt;
+            text-align: right;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+            color: #4a627a;
+            font-family: '微软雅黑', sans-serif;
+        }
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+            .report-container {
+                box-shadow: none;
+            }
+            .tab-content {
+                display: block !important;
+            }
+            .tab-btn {
+                display: none;
+            }
+        }
+        @media (max-width: 900px) {
+            #chart1,
+            #chart2,
+            #chart3 {
+                height: 400px;
+            }
+            .kpi-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            }
+            .tab-btn {
+                font-size: 13pt;
+                padding: 8px 14px;
+                min-height: 46px;
+            }
+        }
+
+        /* ===== 备注标签样式（含手写板） ===== */
+        .note-container {
+            padding: 20px 20px;
+            background: #fafcff;
+            border-radius: 16px;
+            margin: 10px 0;
+        }
+        .note-container .note-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .note-container .note-tabs button {
+            font-family: '微软雅黑', sans-serif;
+            font-size: 14pt;
+            padding: 10px 24px;
+            border: 2px solid #cbd5e1;
+            border-radius: 30px;
+            background: #f1f4f9;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 600;
+            touch-action: manipulation;
+            min-height: 50px;
+        }
+        .note-container .note-tabs button.active {
+            background: #2c7da0;
+            color: #fff;
+            border-color: #2c7da0;
+        }
+        .note-container .note-tabs button:active {
+            transform: scale(0.95);
+        }
+        .note-container .note-panel {
+            display: none;
+        }
+        .note-container .note-panel.active {
+            display: block;
+        }
+        .note-container textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 16px;
+            font-family: '微软雅黑', 'PingFang SC', sans-serif;
+            font-size: 15pt;
+            line-height: 1.6;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            resize: vertical;
+            background: #ffffff;
+            color: #1e2a3e;
+            transition: border-color 0.2s;
+        }
+        .note-container textarea:focus {
+            outline: none;
+            border-color: #2c7da0;
+            box-shadow: 0 0 0 3px rgba(44, 125, 160, 0.15);
+        }
+        .note-container .note-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .note-container .note-toolbar button {
+            background: #2c7da0;
+            color: #fff;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 30px;
+            font-size: 14pt;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-family: '微软雅黑', sans-serif;
+            min-height: 50px;
+            touch-action: manipulation;
+        }
+        .note-container .note-toolbar button:active {
+            transform: scale(0.95);
+        }
+        .note-container .note-toolbar button:hover {
+            background: #1f5a7a;
+        }
+        .note-container .note-toolbar .save-time {
+            font-size: 13pt;
+            color: #4a627a;
+            font-family: '微软雅黑', sans-serif;
+        }
+        .note-container .note-toolbar .save-status {
+            font-size: 13pt;
+            font-weight: 600;
+            color: #27ae60;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .note-container .note-toolbar .save-status.show {
+            opacity: 1;
+        }
+
+        /* 手写板 */
+        .handwrite-area {
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 6px;
+            touch-action: none;
+            position: relative;
+        }
+        .handwrite-area canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16 / 9;
+            background: #ffffff;
+            border-radius: 8px;
+            touch-action: none;
+            cursor: crosshair;
+        }
+        .handwrite-tools {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 10px 0 6px;
+        }
+        .handwrite-tools button {
+            font-family: '微软雅黑', sans-serif;
+            font-size: 13pt;
+            padding: 8px 20px;
+            border: 1px solid #bdc4d0;
+            border-radius: 30px;
+            background: #f1f4f9;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 500;
+            touch-action: manipulation;
+            min-height: 44px;
+        }
+        .handwrite-tools button:active {
+            transform: scale(0.94);
+        }
+        .handwrite-tools button.primary {
+            background: #2c7da0;
+            color: #fff;
+            border-color: #2c7da0;
+        }
+        .handwrite-tools button.primary:active {
+            background: #1f5a7a;
+        }
+        .handwrite-tools input[type="color"] {
+            width: 44px;
+            height: 44px;
+            padding: 2px;
+            border: 1px solid #bdc4d0;
+            border-radius: 30px;
+            cursor: pointer;
+            background: #fff;
+        }
+        .handwrite-tools input[type="range"] {
+            width: 100px;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #dce3ec;
+            border-radius: 10px;
+            outline: none;
+        }
+        .handwrite-tools input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #2c7da0;
+            cursor: pointer;
+        }
+        .handwrite-preview {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .handwrite-preview img {
+            max-height: 120px;
+            border: 1px solid #dce3ec;
+            border-radius: 8px;
+            background: #fafcff;
+        }
+        .handwrite-preview .empty-hint {
+            font-size: 13pt;
+            color: #8a9baa;
+            font-family: '微软雅黑', sans-serif;
+            padding: 12px 0;
+        }
+
+        /* ===== 温度看板内部样式 ===== */
+        .temp-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .temp-card {
+            background: #fafbfc;
+            border: 1px solid #dce3ea;
+            border-radius: 8px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .temp-card .card-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 6px;
+            border-left: 4px solid #e67e22;
+            padding-left: 8px;
+        }
+        .temp-card .chart-box {
+            flex: 1;
+            position: relative;
+            min-height: 200px;
+        }
+        .temp-card .chart-box canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .temp-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            line-height: 1.3;
+        }
+        .temp-data-table th,
+        .temp-data-table td {
+            border: 1px solid #ccd5dd;
+            padding: 5px 3px;
+            text-align: center;
+        }
+        .temp-data-table th {
+            background: #34495e;
+            color: white;
+        }
+        .temp-abnormal-high {
+            background: #ffe0e0;
+            font-weight: bold;
+        }
+        .temp-high-eff {
+            background: #d4edda;
+            font-weight: bold;
+        }
+        .temp-summary {
+            margin-top: 12px;
+            background: #f0f4f8;
+            border-left: 5px solid #2c3e50;
+            padding: 8px 12px;
+            font-size: 11px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        .temp-focus-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 6px;
+            padding: 6px 10px;
+            margin-top: 8px;
+            font-size: 11px;
+        }
+        .temp-focus-box .focus-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 4px;
+        }
+        @media (max-width: 900px) {
+            .temp-dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== 经济性分析报告内部样式（整合） ===== */
+        .eco-report {
+            font-family: '仿宋', 'FangSong', 'Times New Roman', serif;
+            background: #fafcfe;
+            padding: 6px 6px 12px 6px;
+            border-radius: 0 0 10px 10px;
+        }
+        .eco-report .body-text {
+            font-family: '仿宋', 'FangSong', serif;
+            font-size: 15pt;
+            line-height: 22pt;
+            text-align: justify;
+            text-justify: inter-ideograph;
+            text-indent: 2em;
+            margin: 0 0 6px 0;
+            color: #1e2c3a;
+        }
+        .eco-report .section-title {
+            font-family: 'SimHei', '黑体', sans-serif;
+            font-weight: 700;
+            font-size: 17pt;
+            line-height: 20pt;
+            text-indent: 0;
+            margin: 12pt 0 6pt 0;
+            page-break-after: avoid;
+            color: #1a3c5e;
+            border-left: 6px solid #e67e22;
+            padding-left: 10px;
+            border-bottom: none;
+        }
+        .eco-report .sub-section-title {
+            font-family: 'SimHei', '黑体', sans-serif;
+            font-weight: 700;
+            font-size: 16pt;
+            line-height: 20pt;
+            text-indent: 0;
+            margin: 10pt 0 4pt 0;
+            color: #1f4a6e;
+        }
+        .eco-report .body-text b {
+            color: #b85b1a;
+        }
+        .eco-report .table-wrap {
+            margin: 8pt 0;
+            overflow-x: auto;
+            border-radius: 6px;
+            border: 1px solid #d0dceb;
+            -webkit-overflow-scrolling: touch;
+        }
+        .eco-report table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: '仿宋', 'FangSong', serif;
+            font-size: 11.5pt;
+            text-align: center;
+            border: none;
+            page-break-inside: avoid;
+        }
+        .eco-report table th {
+            font-family: 'SimHei', '黑体', sans-serif;
+            font-weight: 700;
+            background: #1f4a6e;
+            color: #ffffff;
+            border: 1px solid #2b5a82;
+            padding: 6px 3px;
+            font-size: 11pt;
+        }
+        .eco-report table td {
+            border: 1px solid #c8d5e4;
+            padding: 5px 3px;
+            text-align: center;
+            vertical-align: middle;
+            background-color: #fcfdff;
+        }
+        .eco-report table tr:nth-child(even) td {
+            background-color: #f5f8fd;
+        }
+        .eco-report table tr:last-child td {
+            background-color: #e3eaf3;
+            font-weight: 700;
+            color: #0b2a44;
+        }
+        .eco-report .table-note {
+            font-family: '仿宋', 'FangSong', serif;
+            font-size: 14pt;
+            line-height: 20pt;
+            color: #3d5a78;
+            margin-top: 2pt;
+            text-indent: 0;
+        }
+        .eco-tab-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 4px;
+            margin: 14pt 0 10pt 0;
+            border-bottom: 3px solid #1a3c5e;
+            padding-bottom: 0;
+        }
+        .eco-tab-btn {
+            font-family: 'SimHei', '黑体', sans-serif;
+            font-size: 14pt;
+            padding: 8px 22px;
+            background: #eef3f9;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #1f3a57;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            touch-action: manipulation;
+            min-height: 46px;
+        }
+        .eco-tab-btn:active {
+            transform: scale(0.95);
+        }
+        .eco-tab-btn.active {
+            background: #1a3c5e;
+            color: #ffffff;
+            border-bottom: 3px solid #e67e22;
+            box-shadow: 0 2px 8px rgba(26, 60, 94, 0.25);
+            font-weight: 700;
+        }
+        .eco-tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .eco-tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0.2;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @media (max-width: 760px) {
+            .eco-report .body-text {
+                font-size: 13pt;
+                line-height: 20pt;
+            }
+            .eco-report table {
+                font-size: 10pt;
+            }
+            .eco-tab-btn {
+                font-size: 12pt;
+                padding: 6px 14px;
+                min-height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="main-title">黄磷生产经营分析报告（8月上旬）</div>
+        <div class="sub-title"> 经营分析 &amp; 电炉指标多期对比 &amp; 温度关联分析</div>
+
+        <!-- 选项卡 -->
+        <div class="tab-bar">
+            <div class="tab-btn active" data-tab="tab0">💰 经营综合分析</div>
+            <div class="tab-btn" data-tab="tab1">📊电炉运行经济性分析</div>
+            <div class="tab-btn" data-tab="tab2">📊 7月全月 vs 8月上旬</div>
+            <div class="tab-btn" data-tab="tab3">📈 7月上旬→中旬→下旬→8月上旬</div>
+            <div class="tab-btn" data-tab="tab4">📉 7月上旬 vs 8月上旬</div>
+            <div class="tab-btn" data-tab="tab5">🌡️ 导气管温度与产量关联</div>
+            <div class="tab-btn" data-tab="tab6">📝 会议备注</div>
+        </div>
+
+        <!-- ========================= TAB0: 经营与成本综合分析 ========================= -->
+        <div id="tab0" class="tab-content active">
+            <div class="section-title"></div>
+
+            <!-- 1. 产量及电炉运行 -->
+            <div class="subsection-title">1. 黄磷产量及电炉运行（8月1-10日）</div>
+            <table class="data-table">
+                <thead><tr><th>来源</th><th>产量(吨)</th><th>占比</th><th>日均产量(吨)</th></tr></thead>
+                <tbody>
+                    <tr><td>电炉生产</td><td>3,154.70</td><td>93.84%</td><td>315.47</td></tr>
+                    <tr><td>污水回收</td><td>175.00</td><td>5.21%</td><td>17.50</td></tr>
+                    <tr><td>转锅回收</td><td>32.00</td><td>0.95%</td><td>3.20</td></tr>
+                    <tr style="font-weight:bold; background:#eef2f5;"><td>合计产量</td><td>3,361.70</td><td>100%</td><td>336.17</td></tr>
+                </tbody>
+            </table>
+            <p>运行方式：<strong>8月1-10日：8台全时段运行24h（峰段避峰）</strong>，日均产量336.17吨，较7月全月日均产量（387.35吨/日）下降13.2%，主要受8月夏季电价政策影响而避峰运行影响。按此节奏推算全月产量约10,421吨，较7月（12,008吨）下降13.2%。</p>
+
+            <!-- 2. 电力消耗结构 -->
+            <div class="subsection-title">2. 电力消耗结构分析（8月1-10日）</div>
+            <table class="data-table">
+                <thead><tr><th>时段</th><th>电量(万度)</th><th>电量占比</th><th>电价(元/度)</th><th>电费占比</th></tr></thead>
+                <tbody>
+                    <tr><td>峰段</td><td>1,545.50</td><td>32.41%</td><td>0.58207</td><td>45.6%</td></tr>
+                    <tr><td>平段</td><td>1,760.12</td><td>36.91%</td><td>0.42320</td><td>37.8%</td></tr>
+                    <tr><td>谷段</td><td>1,463.67</td><td>30.68%</td><td>0.26918</td><td>16.6%</td></tr>
+                    <tr style="font-weight:bold;"><td>合计/平均</td><td>4,769.29</td><td>100%</td><td>0.41339</td><td>100%</td></tr>
+                </tbody>
+            </table>
+            <div class="insight-badge"><i class="fas fa-bolt"></i> <strong>电价分析：</strong>8月1-10日综合电价0.41339元/度，较7月（0.37096元/度）上涨11.44%，主因夏季电价政策导致峰段电价上涨至0.582元/度（+13.9%），平段电价上涨至0.423元/度（+15.0%）。谷段电量占比30.68%，虽较7月（27.42%）略有回升，但远低于6月水平（43.18%）。按10天推算电费增加约202万元。</div>
+
+            <!-- 3. 综合成本结构 -->
+            <div class="subsection-title">3. 综合成本结构（全磷口径 · 8月1-10日）</div>
+            <div class="table-note">* 全磷总产量3,361.70吨，环比7月全月数据红色=利好，绿色加粗=需关注。</div>
+            <table class="data-table">
+                <thead><tr><th>成本项目</th><th>单位消耗</th><th>单价(元)</th><th>金额(元/吨)</th><th>成本占比</th><th>环比7月变化</th></tr></thead>
+                <tbody>
+                    <tr><td>磷矿</td><td>12.8588 t/tp</td><td>960.00</td><td>12,344.45</td><td>51.39%</td><td class="cost-down">-486.13元 ↓</td></tr>
+                    <tr><td>电炉电</td><td>13,869 kWh/tp</td><td>0.41339</td><td>5,733.34</td><td>23.87%</td><td class="cost-up">+949.02元 ↑</td></tr>
+                    <tr><td>还原剂</td><td>1.53 t/tp</td><td>1,750.00</td><td>2,677.50</td><td>11.15%</td><td class="cost-up">+168.04元 ↑</td></tr>
+                    <tr><td>固定费用</td><td>—</td><td>—</td><td>1,632.00</td><td>6.79%</td><td class="cost-up">+281.23元 ↑</td></tr>
+                    <tr><td>球团矿</td><td>0.80 t/tp</td><td>600.00</td><td>480.00</td><td>2.00%</td><td class="cost-down">-63.99元 ↓</td></tr>
+                    <tr><td>工资社保</td><td>—</td><td>—</td><td>509.00</td><td>2.12%</td><td class="cost-up">+118.51元 ↑</td></tr>
+                    <tr><td>电极</td><td>17.50 kg/tp</td><td>16.18</td><td>283.15</td><td>1.18%</td><td class="cost-up">+22.49元 ↑</td></tr>
+                    <tr><td>动力电</td><td>663 kWh/tp</td><td>0.41339</td><td>274.08</td><td>1.14%</td><td class="cost-up">+122.08元 ↑</td></tr>
+                    <tr><td>硅石</td><td>0.63 t/tp</td><td>140.00</td><td>88.20</td><td>0.37%</td><td class="cost-up">+21.83元 ↑</td></tr>
+                    <tr style="font-weight:bold; background:#eef2fa;"><td>吨磷完全含税成本</td><td colspan="2">—</td><td>24,021.72</td><td>100%</td><td class="cost-up">+1,133.08元 ↑</td></tr>
+                </tbody>
+            </table>
+            <div class="insight-badge"><i class="fas fa-calculator"></i> <strong>成本上升主因：</strong>电价上涨至0.41339元/度（+11.44%），叠加电炉电单耗上升至13,869 kWh/t（+4.91%），电炉电成本增加949元/吨；还原剂单价上涨及单耗上升增加168元/吨；固定费用因产量下降摊薄增加281元/吨。综合成本较7月上升1,133.08元/吨。</div>
+
+            <!-- 4. 电炉分炉成本排名（完整） -->
+            <div class="subsection-title">4. 电炉分炉成本排名（电炉工序 · 8月上旬）</div>
+            <div class="table-note">本节针对8台电炉（产量3,154.70吨），电炉工序平均成本<strong>25,538.40元/吨</strong>，高于全磷综合成本(24,021.72元/吨)。红色优于平均，绿色加粗劣于平均。</div>
+            <div class="cost-list">
+                <p>🥇 <strong>5#炉</strong>：25,016.28元/t &nbsp;|&nbsp; 🥈 <strong>2#炉</strong>：25,279.28元/t &nbsp;|&nbsp; 🥉 <strong>6#炉</strong>：25,316.58元/t</p>
+                <p>④ 8#炉：25,398.30元/t &nbsp;|&nbsp; ⑤ 4#炉：25,621.70元/t &nbsp;|&nbsp; ⑥ 1#炉：25,669.97元/t</p>
+                <p>⑦ 7#炉：25,986.54元/t &nbsp;|&nbsp; ⑧ 3#炉：26,079.69元/t</p>
+            </div>
+            <table class="data-table">
+                <thead><tr><th>排名</th><th>炉号</th><th>容量(KVA)</th><th>产量(t)</th><th>负荷(KVA)</th><th>负载率</th><th>磷球小计</th><th>还原剂</th><th>电炉电耗</th><th>电极成本</th><th>固定费用</th><th>收得率(%)</th><th>效率(t/h)</th><th>完全成本(元/t)</th></tr></thead>
+                <tbody>
+                    <tr><td>1</td><td>5#</td><td>23000</td><td class="bad-diff">385.3</td><td class="bad-diff">24586</td><td class="bad-diff">106.90%</td><td class="good-red">13452.63</td><td class="good-red">2800.00</td><td class="good-red">6022.57</td><td class="good-red">135.10</td><td class="good-red">2224.29</td><td class="good-red">87.01</td><td class="bad-diff">1.688</td><td class="good-red">25016.28</td></tr>
+                    <tr><td>2</td><td>2#</td><td>23000</td><td class="bad-diff">385.4</td><td class="bad-diff">24549</td><td class="bad-diff">106.73%</td><td class="good-red">13491.46</td><td class="good-red">2817.50</td><td class="good-red">6052.16</td><td class="good-red">292.05</td><td class="bad-diff">2246.08</td><td class="good-red">87.16</td><td class="bad-diff">1.677</td><td class="good-red">25279.28</td></tr>
+                    <tr><td>3</td><td>6#</td><td>23000</td><td class="bad-diff">381.2</td><td class="bad-diff">24815</td><td class="bad-diff">107.89%</td><td class="good-red">13458.92</td><td class="good-red">2817.50</td><td class="bad-diff">6126.72</td><td class="good-red">280.88</td><td class="bad-diff">2246.35</td><td class="good-red">86.94</td><td class="bad-diff">1.674</td><td class="good-red">25316.58</td></tr>
+                    <tr><td>4</td><td>8#</td><td>25000</td><td class="good-red">411.8</td><td class="good-red">25725</td><td class="bad-diff">102.90%</td><td class="good-red">13470.05</td><td class="good-red">2800.00</td><td class="bad-diff">6163.73</td><td class="bad-diff">390.91</td><td class="good-red">2184.27</td><td class="good-red">86.95</td><td class="good-red">1.725</td><td class="good-red">25398.30</td></tr>
+                    <tr><td>5</td><td>4#</td><td>25000</td><td class="good-red">411.5</td><td class="good-red">25208</td><td class="bad-diff">100.83%</td><td class="bad-diff">13738.28</td><td class="bad-diff">2940.00</td><td class="good-red">6042.91</td><td class="bad-diff">331.20</td><td class="good-red">2185.87</td><td class="good-red">85.48</td><td class="good-red">1.724</td><td class="bad-diff">25621.70</td></tr>
+                    <tr><td>6</td><td>1#</td><td>23000</td><td class="bad-diff">383.3</td><td class="bad-diff">24544</td><td class="bad-diff">106.71%</td><td class="bad-diff">13661.43</td><td class="good-red">2852.50</td><td class="bad-diff">6134.43</td><td class="bad-diff">353.53</td><td class="bad-diff">2280.19</td><td class="good-red">86.10</td><td class="bad-diff">1.654</td><td class="bad-diff">25669.97</td></tr>
+                    <tr><td>7</td><td>7#</td><td>25000</td><td class="good-red">398.8</td><td class="good-red">24845</td><td class="bad-diff">99.38%</td><td class="bad-diff">13950.82</td><td class="bad-diff">2905.00</td><td class="bad-diff">6150.51</td><td class="bad-diff">334.44</td><td class="bad-diff">2255.48</td><td class="bad-diff">83.95</td><td class="bad-diff">1.670</td><td class="bad-diff">25986.54</td></tr>
+                    <tr><td>8</td><td>3#</td><td>25000</td><td class="good-red">397.4</td><td class="good-red">25694</td><td class="bad-diff">102.78%</td><td class="bad-diff">14089.35</td><td class="bad-diff">2940.00</td><td class="bad-diff">6180.42</td><td class="good-red">286.87</td><td class="good-red">2191.28</td><td class="bad-diff">83.48</td><td class="good-red">1.719</td><td class="bad-diff">26079.69</td></tr>
+                    <tr style="font-weight:600; background:#f1f5f9;"><td>—</td><td>平均</td><td>—</td><td>394.34</td><td>25000</td><td>—</td><td>13662.58</td><td>2852.50</td><td>6109.53</td><td>301.76</td><td>2225.96</td><td>85.85</td><td>1.692</td><td>25538.40</td></tr>
+                </tbody>
+            </table>
+
+            <!-- 辅助技术指标表 -->
+            <div class="subsection-title" style="font-size:15pt;">电炉辅助技术指标</div>
+            <table class="data-table">
+                <thead><tr><th>炉号</th><th>入炉品位(%)</th><th>运行时间(h)</th><th>球团比例(%)</th><th>电炉电单耗(kWh/t)</th><th>还原剂单耗(t/t)</th><th>磷矿单耗(t/t)</th><th>球团单耗(t/t)</th><th>电极单耗(kg/t)</th><th>渣P₂O₅(%)</th></tr></thead>
+                <tbody>
+                    <tr><td>5#</td><td class="good-red">22.61</td><td class="bad-diff">228.31</td><td class="good-red">7.61</td><td class="good-red">14568.65</td><td class="good-red">1.60</td><td class="good-red">13.444</td><td class="bad-diff">0.91</td><td class="good-red">8.35</td><td class="bad-diff">1.53</td></tr>
+                    <tr><td>2#</td><td class="good-red">22.61</td><td class="bad-diff">229.84</td><td class="bad-diff">6.43</td><td class="good-red">14640.22</td><td class="good-red">1.61</td><td class="good-red">13.579</td><td class="good-red">0.76</td><td class="good-red">18.05</td><td class="bad-diff">1.51</td></tr>
+                    <tr><td>6#</td><td class="good-red">22.61</td><td class="bad-diff">227.67</td><td class="good-red">7.83</td><td class="bad-diff">14820.57</td><td class="good-red">1.61</td><td class="good-red">13.432</td><td class="bad-diff">0.94</td><td class="good-red">17.36</td><td class="good-red">1.30</td></tr>
+                    <tr><td>8#</td><td class="good-red">22.61</td><td class="good-red">238.68</td><td class="good-red">7.56</td><td class="bad-diff">14910.10</td><td class="good-red">1.60</td><td class="good-red">13.469</td><td class="bad-diff">0.90</td><td class="bad-diff">24.16</td><td class="good-red">1.35</td></tr>
+                    <tr><td>4#</td><td class="good-red">22.61</td><td class="good-red">238.62</td><td class="bad-diff">6.73</td><td class="good-red">14617.84</td><td class="bad-diff">1.68</td><td class="bad-diff">13.798</td><td class="good-red">0.82</td><td class="bad-diff">20.47</td><td class="bad-diff">1.61</td></tr>
+                    <tr><td>1#</td><td class="good-red">22.61</td><td class="bad-diff">231.74</td><td class="bad-diff">6.41</td><td class="bad-diff">14839.24</td><td class="bad-diff">1.63</td><td class="good-red">13.749</td><td class="good-red">0.77</td><td class="bad-diff">21.85</td><td class="bad-diff">1.50</td></tr>
+                    <tr><td>7#</td><td class="good-red">22.61</td><td class="good-red">238.82</td><td class="good-red">7.56</td><td class="bad-diff">14878.13</td><td class="bad-diff">1.66</td><td class="bad-diff">13.945</td><td class="bad-diff">0.94</td><td class="bad-diff">20.67</td><td class="good-red">1.22</td></tr>
+                    <tr><td>3#</td><td class="good-red">22.61</td><td class="bad-diff">231.23</td><td class="bad-diff">6.46</td><td class="bad-diff">14950.48</td><td class="bad-diff">1.68</td><td class="bad-diff">14.176</td><td class="good-red">0.80</td><td class="good-red">17.73</td><td class="bad-diff">1.79</td></tr>
+                    <tr style="font-weight:700; background:#f0f2f5;"><td>平均</td><td>22.61</td><td>233.11</td><td>7.07</td><td>14779</td><td>1.63</td><td>13.70</td><td>0.85</td><td>18.65</td><td>1.48</td></tr>
+                </tbody>
+            </table>
+
+            <!-- 成本驱动因素深度解析 -->
+            <div class="subsection-title" style="font-size:15pt;">成本驱动因素深度解析（制磷车间）</div>
+            <div style="margin:0 8px 16px; font-family:'仿宋',serif; font-size:14pt; line-height:1.8;">
+                <p><strong>1. 磷球综合成本（磷矿+球团）——占比约53.5%</strong><br>磷球小计从5#炉13,453元/t到3#炉14,089元/t，极差637元。5#炉收得率87.01%，磷矿单耗13.44t/t、球团0.91t/t，投料结构较优；3#炉收得率仅83.48%，磷矿单耗14.18t/t、球团0.80t/t均为最高，高投料未有效转化为产出。</p>
+                <p><strong>2. 还原剂消耗及关联分析</strong><br>还原剂单耗1.60~1.68t/t，3#、4#炉最高（1.68），渣磷分别1.79%和1.61%，收得率偏低，还原剂过量未提升回收；5#、8#炉单耗1.60最低，收得率分别87.01%和86.95%，配碳精准。</p>
+                <p><strong>3. 固定费用与运行时间</strong><br>运行时间均超227h，8#炉运行238.82h最长，固定费用2,184元/t；1#炉运行231.74h，固定费用2,280元/t（最高）。按此推算全月运行时间约700h，与7月基本持平，但产量下降导致固定费用摊薄效果减弱。</p>
+            </div>
+
+            <!-- 综合诊断 -->
+            <div class="subsection-title">综合诊断与深度归因（电炉成本排名）</div>
+            <table class="data-table">
+                <thead><tr><th>排名</th><th>炉号</th><th>容量组</th><th>收得率(%)</th><th>效率(t/h)</th><th>优势与亮点</th><th>劣势与根本原因</th></tr></thead>
+                <tbody>
+                    <tr><td>1</td><td>5#</td><td>23000</td><td class="good-red">87.01</td><td class="bad-diff">1.688</td><td>收得率优秀，电极消耗最低(8.35)，磷球成本最低</td><td>效率偏低，运行时间最短(228.31h)</td></tr>
+                    <tr><td>2</td><td>2#</td><td>23000</td><td class="good-red">87.16</td><td class="bad-diff">1.677</td><td>收得率最高，磷球成本较低</td><td>固定费用偏高(2246.08)</td></tr>
+                    <tr><td>3</td><td>6#</td><td>23000</td><td class="good-red">86.94</td><td class="bad-diff">1.674</td><td>收得率优秀，电极消耗较低(17.36)，渣磷最低(1.30)</td><td>产量最低(381.2t)</td></tr>
+                    <tr><td>4</td><td>8#</td><td>25000</td><td class="good-red">86.95</td><td class="good-red">1.725</td><td>效率最高，运行时间最长</td><td>电极消耗最高(24.16)，电耗最高</td></tr>
+                    <tr><td>5</td><td>4#</td><td>25000</td><td class="good-red">85.48</td><td class="good-red">1.724</td><td>效率优秀，产量较高(411.5t)</td><td>还原剂/磷矿单耗偏高，电极消耗偏高</td></tr>
+                    <tr><td>6</td><td>1#</td><td>23000</td><td class="good-red">86.10</td><td class="bad-diff">1.654</td><td>收得率较高</td><td>固定费用最高(2280.19)，效率最低，电极消耗偏高</td></tr>
+                    <tr><td>7</td><td>7#</td><td>25000</td><td class="bad-diff">83.95</td><td class="bad-diff">1.670</td><td>渣磷最低(1.22)</td><td>收得率偏低，磷球/还原剂/电极均超标</td></tr>
+                    <tr><td>8</td><td>3#</td><td>25000</td><td class="bad-diff">83.48</td><td class="good-red">1.719</td><td>效率较高，电极消耗较低(17.73)</td><td>收得率垫底，磷矿/还原剂单耗最高，成本最高</td></tr>
+                </tbody>
+            </table>
+
+            <!-- 管理建议 -->
+            <div class="subsection-title">管理建议</div>
+            <div class="insight-box">
+                <p style="text-indent:0;"><strong>1. 产能利用率提升：</strong>8月避峰运行导致平均负载率仅104%，产能释放不足。建议优化避峰策略，在谷段提高负荷，目标负载率提升至110%以上。</p>
+                <p style="text-indent:0;"><strong>2. 标杆参数固化：</strong>以5#炉为综合标杆（收得率87.01%、电极8.35kg/t），以8#炉为效率标杆（1.725t/h）。综合目标：入炉品位≥22.61%，磷球小计≤13,600元/t，电极≤16kg/t，收得率≥86%，运行时间≥235h/10天。</p>
+                <p style="text-indent:0;"><strong>3. 收得率提升行动：</strong>3#（83.48%）、7#（83.95%）炉收得率偏低，每提升1个百分点可降本约140元/t。</p>
+                <p style="text-indent:0;"><strong>4. 电力成本优化：</strong>当前综合电价0.413元/度较7月上涨11.44%，建议在谷段（0.269元/度）增加用电比例，目标谷段占比提升至35%以上。</p>
+            </div>
+        </div>
+
+        <!-- ========================= TAB1: 8月上旬运行经济性分析 ========================= -->
+        <div id="tab1" class="tab-content">
+            <div class="section-title"></div>
+            <div class="eco-report">
+
+                <!-- 总体概况（固定显示） -->
+                <div style="margin-bottom:12pt;">
+                    <h2 class="section-title" style="border-left-color:#2c7a4a;">总体概况</h2>
+                    <p class="body-text">8月上旬，公司8台电炉累计生产黄磷3,154.7吨，电炉加权平均吨磷完全含税成本为25,538.40元/吨。8台电炉总运行时间为1,864.91小时，加权平均入炉品位22.61%，加权平均磷收率85.85%，加权平均产能时效1.692 t/h。</p>
+                    <p class="body-text">从整体上看，8月上旬生产运行呈现以下特征：产量环比下降、成本同比上升、球团配比大幅下调、磷收率有所改善。在球团配比大幅下调和错峰运行的双重背景下，吨磷完全成本较7月全月基本持平（微升0.11%），但较7月上旬上升1.97%。磷收率提升（85.85%，较7月全月+1.31个百分点）和电炉电单耗下降（14,779 kWh/tp，较7月上旬-1.02%）是两大积极信号。然而，3#炉成本严重超标（5#炉成本最低25,016.28元/吨，3#炉成本最高26,079.69元/吨，两者相差1,063.41元/吨，成本差异显著），成本排名靠前的炉号（5#、2#、6#、8#）主要位于三工段和一工段，而成本排名靠后的炉号（4#、1#、7#、3#）集中于四工段和二工段。后续应以5#炉为标杆，重点关注3#炉磷收率，优化球团配比，推动二工段管理提升。</p>
+
+                    <h2 class="sub-section-title">8月上旬原料、产量、消耗数据汇总表（按吨磷完全成本从低到高排序）</h2>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>炉号</th>
+                                    <th>电炉黄磷总产量(t)</th>
+                                    <th>磷矿消耗总量(t)</th>
+                                    <th>球团消耗总量(t)</th>
+                                    <th>焦丁消耗总量(t)</th>
+                                    <th>硅石消耗总量(t)</th>
+                                    <th>电极消耗总量(kg)</th>
+                                    <th>总消耗电量(kWh)</th>
+                                    <th>电炉吨磷完全含税成本（元/吨）</th>
+                                    <th>磷渣残磷平均值(%)</th>
+                                    <th>入炉品位(P入)</th>
+                                    <th>焦丁固定碳(%)</th>
+                                    <th>磷矿酸度(A)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>5#</td><td>385.3</td><td>4247.47</td><td>350.08</td><td>616.56</td><td>257.91</td><td>6093.67</td><td>5,613,300</td><td>25,016.28</td><td>1.531</td><td>22.614</td><td>84.24</td><td>0.856</td></tr>
+                                <tr><td>2#</td><td>385.4</td><td>4290.06</td><td>294.81</td><td>618.73</td><td>252.19</td><td>7886.98</td><td>5,642,340</td><td>25,279.28</td><td>1.508</td><td>22.613</td><td>83.91</td><td>0.856</td></tr>
+                                <tr><td>6#</td><td>381.2</td><td>4195.76</td><td>356.47</td><td>612.04</td><td>254.12</td><td>6919.93</td><td>5,649,600</td><td>25,316.58</td><td>1.299</td><td>22.614</td><td>84.24</td><td>0.852</td></tr>
+                                <tr><td>8#</td><td>411.8</td><td>4545.00</td><td>371.61</td><td>658.31</td><td>276.03</td><td>7195.35</td><td>6,139,980</td><td>25,398.30</td><td>1.347</td><td>22.614</td><td>84.24</td><td>0.842</td></tr>
+                                <tr><td>4#</td><td>411.5</td><td>4655.96</td><td>335.87</td><td>691.71</td><td>276.05</td><td>7390.31</td><td>6,015,240</td><td>25,621.70</td><td>1.610</td><td>22.613</td><td>83.91</td><td>0.844</td></tr>
+                                <tr><td>1#</td><td>383.3</td><td>4320.27</td><td>295.98</td><td>623.07</td><td>255.13</td><td>9035.92</td><td>5,687,880</td><td>25,669.97</td><td>1.499</td><td>22.613</td><td>83.91</td><td>0.853</td></tr>
+                                <tr><td>7#</td><td>398.8</td><td>4558.95</td><td>372.97</td><td>661.12</td><td>275.93</td><td>6162.52</td><td>5,933,400</td><td>25,986.54</td><td>1.223</td><td>22.614</td><td>84.24</td><td>0.843</td></tr>
+                                <tr><td>3#</td><td>397.4</td><td>4616.95</td><td>318.84</td><td>666.51</td><td>273.28</td><td>7539.91</td><td>5,941,320</td><td>26,079.69</td><td>1.790</td><td>22.613</td><td>83.91</td><td>0.840</td></tr>
+                                <tr style="font-weight:bold; background-color:#e3eaf3;">
+                                    <td>小计/平均</td>
+                                    <td>3154.7</td>
+                                    <td>35430.42</td>
+                                    <td>2696.63</td>
+                                    <td>5148.05</td>
+                                    <td>2120.64</td>
+                                    <td>58624.68</td>
+                                    <td>46,623,000</td>
+                                    <td>25,538.40</td>
+                                    <td>1.48</td>
+                                    <td>22.614</td>
+                                    <td>—</td>
+                                    <td>0.85</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="body-text table-note">注：小计行中产量、消耗为合计值，成本、磷渣残磷、入炉品位、酸度为加权平均值。焦丁固定碳为各炉对应值，未做平均。</p>
+                </div>
+
+                <!-- 经济性报告内部选项卡 -->
+                <div class="eco-tab-nav">
+                    <button class="eco-tab-btn active" data-target="eco_tab2">成本分析</button>
+                    <button class="eco-tab-btn" data-target="eco_tab3">单耗分析</button>
+                    <button class="eco-tab-btn" data-target="eco_tab4">工艺指标分析</button>
+                    <button class="eco-tab-btn" data-target="eco_tab5">各炉差异对比与标杆分析</button>
+                    <button class="eco-tab-btn" data-target="eco_tab6">问题</button>
+                </div>
+
+                <!-- 成本分析 -->
+                <div id="eco_tab2" class="eco-tab-content active">
+                    <h2 class="sub-section-title">2.1 成本对比分析</h2>
+                    <p class="body-text"><b>与7月上旬同比：</b>8月上旬加权平均成本25,538元/吨，较7月上旬的25,045元/吨上升493元/吨（+1.97%）。成本上升的主要驱动因素是球团配比大幅下调导致磷矿单耗上升（从10.72→11.23 t/tp），以及电价上涨。</p>
+                    <p class="body-text"><b>与7月全月环比：</b>8月上旬成本25,538元/吨，较7月全月平均25,510元/吨微升28元/吨（+0.11%）。成本基本持平，但8月上旬仅运行10天，需关注全月趋势。</p>
+                    <p class="body-text"><b>与7月下旬环比：</b>7月下旬成本为25,510元/吨，8月上旬与之基本持平。</p>
+
+                    <h2 class="sub-section-title">2.2 成本构成解析</h2>
+                    <p class="body-text">根据生产月报数据，8月上旬各炉成本构成中，磷矿+球团原料成本占比最高（约53%），其次为电炉电耗（约24%）和还原剂（约11%）。</p>
+                    <p class="body-text">以5#炉为例（成本最低），其成本构成优势在于：磷矿+球团小计13,452.63元/吨（8台炉中最低）、电炉电耗6,022.57元/吨（8台炉中最低）。而3#炉成本最高的主因是磷矿+球团小计达到14,089.35元/吨（8台炉中最高），同时电炉电耗也高达6,180.42元/吨。</p>
+                </div>
+
+                <!-- 单耗分析 -->
+                <div id="eco_tab3" class="eco-tab-content">
+                    <h2 class="sub-section-title">主要原料单耗</h2>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr><th>指标</th><th>8月上旬加权平均</th><th>7月全月平均</th><th>7月上旬</th><th>变化趋势</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>磷矿单耗（t/tp）</td><td>11.23</td><td>11.09</td><td>10.72</td><td>↑上升</td></tr>
+                                <tr><td>球团单耗（t/tp）</td><td>0.85</td><td>1.08</td><td>1.52</td><td>↓大幅下降</td></tr>
+                                <tr><td>磷球合计单耗（t/tp）</td><td>12.09</td><td>12.17</td><td>12.24</td><td>↓下降</td></tr>
+                                <tr><td>焦丁单耗（t/tp）</td><td>1.63</td><td>1.57</td><td>1.59</td><td>↑上升</td></tr>
+                                <tr><td>电炉电单耗（kWh/tp）</td><td>14,779</td><td>14,815</td><td>14,931</td><td>↓下降</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="body-text"><b>核心发现：</b></p>
+                    <p class="body-text"><b>（1）球团配比大幅下调。</b>球团单耗从7月上旬的1.52 t/tp降至8月上旬的0.85 t/tp，降幅达44%。球团占比从7月上旬的12.41%降至8月上旬的7.07%。这是8月上旬最显著的生产工艺调整。球团配比下降的直接结果是磷矿单耗上升（从10.72→11.23 t/tp），但磷球合计单耗反而从12.24降至12.09 t/tp，说明总入炉料消耗有所优化。</p>
+                    <p class="body-text"><b>（2）电炉电单耗有所改善。</b>电炉电单耗从7月上旬的14,931 kWh/tp降至8月上旬的14,779 kWh/tp，下降152 kWh/tp（-1.02%）。这与平均负荷从27,482 KVA降至25,000 KVA有关——峰段降负荷运行。</p>
+                    <p class="body-text"><b>（3）焦丁单耗上升。</b>焦丁单耗从7月上旬的1.59 t/tp升至8月上旬的1.63 t/tp，入炉品位下降（22.69%→22.61%）。</p>
+                </div>
+
+                <!-- 工艺指标分析 -->
+                <div id="eco_tab4" class="eco-tab-content">
+                    <h2 class="sub-section-title">4.1 生产效率</h2>
+                    <p class="body-text">8月上旬加权平均产能时效为1.692 t/h，较7月上旬的1.841 t/h下降0.149 t/h（-8.1%）。各炉生产效率排名依次为：<b>8#炉（1.725 t/h）</b>、4#炉（1.724）、3#炉（1.719）、5#炉（1.688）、2#炉（1.677）、6#炉（1.674）、7#炉（1.670）、1#炉（1.654）。</p>
+                    <p class="body-text">产能时效下降的主要原因是平均负荷大幅下降：从7月上旬的27,482 KVA降至8月上旬的25,000 KVA，降幅达9.03%。负荷下降的直接原因是峰段避峰运行——8台炉满开但峰段避峰运行24h。</p>
+
+                    <h2 class="sub-section-title">4.2 磷收率</h2>
+                    <p class="body-text">8月上旬加权平均磷收率为85.85%，较7月上旬的83.89%提升1.96个百分点，较7月全月的84.54%也提升了1.31个百分点。磷收率提升是一个积极信号，各炉中2#炉磷收率最高（87.16%），3#炉最低（83.48%）。</p>
+                    <h2 class="sub-section-title">4.3 炉渣指标</h2>
+                    <p class="body-text">8月上旬炉渣P₂O₅加权平均为1.48%，较7月上旬的1.53%有所下降，较7月全月的1.60%也有明显改善。炉渣残磷越低，说明磷的回收越充分。各炉中7#炉炉渣P₂O₅最低（1.223%），3#炉最高（1.79%）。</p>
+                    <p class="body-text">炉渣酸度加权平均为0.85，各炉差异不大（0.842-0.857）。</p>
+
+                    <h2 class="sub-section-title">4.4 运行时间与计划停炉</h2>
+                    <p class="body-text">8月上旬8台炉总运行时间1,864.91小时，除4#、7#、8#炉外，其余5台炉均有计划停炉：</p>
+                    <p class="body-text" style="text-indent:0; padding-left:2.5em;">1#炉停炉6.8h，2#炉停炉9.03h，3#炉停炉7.65h，5#炉停炉11.33h，6#炉停炉11.52h。</p>
+                </div>
+
+                <!-- 各炉差异对比与标杆分析 -->
+                <div id="eco_tab5" class="eco-tab-content">
+                    <h2 class="sub-section-title">最优与最差炉对比（5#炉 vs 3#炉）</h2>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>指标</th><th>5#炉（最优）</th><th>3#炉（最差）</th><th>差异</th></tr></thead>
+                            <tbody>
+                                <tr><td>吨磷完全成本</td><td>25,016元</td><td>26,080元</td><td>+1,063元</td></tr>
+                                <tr><td>磷矿+球团小计</td><td>13,452.63元</td><td>14,089.35元</td><td>+636.72元</td></tr>
+                                <tr><td>电炉电耗</td><td>6,022.57元</td><td>6,180.42元</td><td>+157.85元</td></tr>
+                                <tr><td>磷收率</td><td>87.01%</td><td>83.48%</td><td>-3.53个百分点</td></tr>
+                                <tr><td>产能时效</td><td>1.688 t/h</td><td>1.719 t/h</td><td>+0.031 t/h</td></tr>
+                                <tr><td>炉渣P₂O₅</td><td>1.531%</td><td>1.79%</td><td>+0.259个百分点</td></tr>
+                                <tr><td>磷矿单耗</td><td>11.02 t/tp</td><td>11.62 t/tp</td><td>+0.60 t/tp</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="body-text"><b>3#炉成本最高的核心原因：</b>磷矿单耗过高（11.62 t/tp），为8台炉最高；磷收率最低（83.48%），导致原料利用率差；炉渣残磷最高（1.79%），印证了磷收率低的问题；还原剂单耗最高（1.68 t/tp）。</p>
+                    <p class="body-text"><b>5#炉成本最低的成功因素：</b>磷矿单耗最低（11.02 t/tp）；电炉电单耗最低（14,569 kWh/tp）；磷收率最高之一（87.01%）；还原剂单耗较低（1.60 t/tp）。</p>
+                </div>
+
+                <!-- 问题 -->
+                <div id="eco_tab6" class="eco-tab-content">
+                    <h2 class="sub-section-title">核心问题</h2>
+                    <p class="body-text"><b>问题一：3#炉成本严重超标。</b>3#炉吨磷成本26,080元，较最低的5#炉高出1,063元，较公司加权平均高出541元。主因是磷矿单耗过高（11.62 t/tp）、磷收率过低（83.48%）、炉渣残磷过高（1.79%）。</p>
+                    <p class="body-text"><b>问题二：球团配比大幅下调带来的连锁反应。</b>球团占比从12.41%骤降至7.07%，虽降低了球团成本，但导致磷矿单耗上升（10.72→11.23 t/tp），同时入炉品位下降（22.69%→22.61%）。</p>
+                    <p class="body-text"><b>问题三：产能时效下降明显。</b>受避峰运行影响，平均负荷下降9%，产能时效下降8.1%。虽然电炉电单耗略有改善，但产量损失显著。</p>
+                    <p class="body-text"><b>问题四：二工段整体成本偏高。</b>二工段（1#、3#、7#炉）包揽成本排名后三位，工段成本控制形势严峻。</p>
+                </div>
+
+            </div><!-- end eco-report -->
+        </div>
+
+        <!-- ========================= TAB2: 7月全月 vs 8月上旬 ========================= -->
+        <div id="tab2" class="tab-content">
+            <div class="section-title"></div>
+            <p><strong>核心结论：</strong>8月上旬较7月全月，8台电炉累计产量3,154.7吨（日均315.47吨），推算全月约9,780吨，较7月（10,693吨）下降8.5%。入炉品位由22.70%降至22.61%（-0.09pp），磷收率由84.54%提升至85.85%（+1.31pp）；电炉电单耗由14,815降至14,779 kWh/tp（-0.2%），磷球单耗由12.17降至12.09（-0.7%），焦丁单耗由1.57升至1.63（+3.8%）。吨磷完全成本由25,510元/吨微升至25,538元/吨（+0.1%），电炉工序成本由25,510元/吨微升至25,538元/吨。受8月夏季电价政策影响，产量下降但收得率提升，成本基本持平。</p>
+            <p><strong>分炉亮点：</strong>5#炉收得率87.01%，成本最低（25,016元/t）；8#炉效率最高（1.725t/h）；3#炉成本最高（26,080元/t），收得率最低（83.48%），需重点改善。</p>
+
+            <div class="dashboard-panel">
+                <div class="control-group">
+                    <label>对比维度</label>
+                    <select id="dim1">
+                        <option value="furnace">分炉号 (1#~8#)</option>
+                        <option value="section">分工段 (一~四工段)</option>
+                        <option value="overall">全厂加权平均</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>分析指标</label>
+                    <select id="ind1">
+                        <option value="output">产量 (吨)</option>
+                        <option value="runtime">运行时间 (小时)</option>
+                        <option value="grade">入炉品位 (%)</option>
+                        <option value="load">平均负荷 (kVA)</option>
+                        <option value="recovery">磷收率 (%)</option>
+                        <option value="pelletRate">球团占比 (%)</option>
+                        <option value="pelletConsume">磷球单耗 (t/tp)</option>
+                        <option value="cokeConsume">焦丁单耗 (t/tp)</option>
+                        <option value="powerConsume">电炉电单耗 (kWh/tp)</option>
+                        <option value="productivity">产能时效 (t/h)</option>
+                        <option value="slagP2O5">炉渣P₂O₅ (%)</option>
+                        <option value="acidity">炉渣酸度</option>
+                        <option value="cost">吨磷完全成本 (元/tp)</option>
+                    </select>
+                </div>
+                <div style="font-size:12px; background:#e9ecef; padding:6px 12px; border-radius:20px; font-family:'微软雅黑',sans-serif;">📌 红色虚线为8月上旬全厂加权均值（产量指标为算术平均）；横坐标标签红色优于均值，绿色劣于均值</div>
+            </div>
+            <div class="chart-card">
+                <div class="insight-comment" id="comment1">📊 指标点评将在此显示</div>
+                <div id="chart1"></div>
+                <div class="data-note">横坐标标签根据与8月上旬均值比较着色（正向指标：红高绿低；消耗指标：红低绿高）。</div>
+            </div>
+
+            <div class="subsection-title">关键数据明细表（7月全月 vs 8月上旬）</div>
+            <div class="table-wrapper">
+                <table class="data-table" id="table1">
+                    <thead><tr><th>炉号/时段</th><th>产量(t)</th><th>入炉品位(%)</th><th>磷收率(%)</th><th>电单耗(kWh/tp)</th><th>磷球单耗(t/tp)</th><th>焦丁单耗(t/tp)</th><th>产能时效(t/h)</th><th>渣P₂O₅(%)</th><th>吨磷完全成本(元/tp)</th></tr></thead>
+                    <tbody id="tbody1"></tbody>
+                </table>
+            </div>
+            <div class="table-note">各单元格为"7月全月值 / 8月上旬值"；最后一行全厂加权平均基于产量加权。</div>
+            <div class="insight-box"><strong>📌 管理启示：</strong> 收得率提升但产量下降，受电价政策影响明显；3#炉成本最高，需专项优化。</div>
+        </div>
+
+        <!-- ========================= TAB3: 7月上旬→中旬→下旬→8月上旬 ========================= -->
+        <div id="tab3" class="tab-content">
+            <div class="section-title"></div>
+            <p><strong>核心结论：</strong>从7月上旬到8月上旬，磷收率先升后稳：83.89%→84.68%→84.98%→85.85%，8月上旬较7月上旬提升1.96pp；电炉电单耗：14,931→14,755→14,767→14,779 kWh/tp，整体平稳；吨磷完全成本：25,045→24,858→25,510→25,538元/吨，中旬降至最低后反弹，8月上旬较7月下旬微升0.1%。球团占比持续下降：12.41%→9.09%→5.43%→7.07%，原料结构优化显著，收得率未受影响。</p>
+            <p><strong>分炉表现：</strong>5#炉8月上旬收得率87.01%，成本最低；3#炉成本最高（26,080元/t），收得率最低（83.48%），需重点关注。</p>
+
+            <div class="dashboard-panel">
+                <div class="control-group">
+                    <label>对比维度</label>
+                    <select id="dim2">
+                        <option value="furnace">分炉号 (1#~8#)</option>
+                        <option value="section">分工段 (一~四工段)</option>
+                        <option value="overall">全厂加权平均</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>分析指标</label>
+                    <select id="ind2">
+                        <option value="output">产量 (吨)</option>
+                        <option value="runtime">运行时间 (小时)</option>
+                        <option value="grade">入炉品位 (%)</option>
+                        <option value="load">平均负荷 (kVA)</option>
+                        <option value="recovery">磷收率 (%)</option>
+                        <option value="pelletRate">球团占比 (%)</option>
+                        <option value="pelletConsume">磷球单耗 (t/tp)</option>
+                        <option value="cokeConsume">焦丁单耗 (t/tp)</option>
+                        <option value="powerConsume">电炉电单耗 (kWh/tp)</option>
+                        <option value="productivity">产能时效 (t/h)</option>
+                        <option value="slagP2O5">炉渣P₂O₅ (%)</option>
+                        <option value="acidity">炉渣酸度</option>
+                        <option value="cost">吨磷完全成本 (元/tp)</option>
+                    </select>
+                </div>
+                <div style="font-size:12px; background:#e9ecef; padding:6px 12px; border-radius:20px; font-family:'微软雅黑',sans-serif;">📌 红色虚线为8月上旬全厂加权均值（产量指标为算术平均）；横坐标标签红色优于均值，绿色劣于均值</div>
+            </div>
+            <div class="chart-card">
+                <div class="insight-comment" id="comment2">📊 指标点评将在此显示</div>
+                <div id="chart2"></div>
+                <div class="data-note">横坐标按8月上旬排名，排序从左到右为第1名至第8名（上旬最优至最差）；标签颜色与8月上旬均值比较。</div>
+            </div>
+
+            <div class="subsection-title">关键数据明细表（7月上旬 vs 中旬 vs 下旬 vs 8月上旬）</div>
+            <div class="table-wrapper">
+                <table class="data-table" id="table2">
+                    <thead><tr><th>炉号/时段</th><th>产量(t)</th><th>入炉品位(%)</th><th>磷收率(%)</th><th>电单耗(kWh/tp)</th><th>磷球单耗(t/tp)</th><th>焦丁单耗(t/tp)</th><th>产能时效(t/h)</th><th>渣P₂O₅(%)</th><th>吨磷完全成本(元/tp)</th></tr></thead>
+                    <tbody id="tbody2"></tbody>
+                </table>
+            </div>
+            <div class="table-note">各单元格为"上旬 / 中旬 / 下旬 / 上旬"；最后一行全厂加权平均基于产量加权。</div>
+            <div class="insight-box"><strong>📌 管理启示：</strong> 收得率持续提升，球团配比大幅下降但收得率未受影响，原料优化成效显著；成本受电价上涨影响回升，需加强用电策略优化。</div>
+        </div>
+
+        <!-- ========================= TAB4: 7月上旬 vs 8月上旬 ========================= -->
+        <div id="tab4" class="tab-content">
+            <div class="section-title"></div>
+            <p><strong>核心结论：</strong>与7月上旬相比，8月上旬产量由3,398.8吨降至3,154.7吨（-7.2%），但收得率由83.89%大幅提升至85.85%（+1.96pp），电炉电单耗由14,931降至14,779 kWh/tp（-1.0%），磷球单耗由12.24降至12.09（-1.2%），焦丁单耗由1.59升至1.63（+2.5%）。吨磷完全成本由25,045元/吨升至25,538元/吨（+2.0%），主因电价上涨。入炉品位由22.69%降至22.61%（-0.08pp），球团占比由12.41%大幅降至7.07%（-5.34pp），原料结构显著优化。</p>
+            <p><strong>分炉亮点：</strong>5#炉收得率87.01%，较7月上旬（84.77%）提升2.24pp，成本最低（25,016元/t）；1#炉收得率86.10%，较7月上旬（81.39%）大幅提升4.71pp；7#炉成本仍最高（25,987元/t），需重点关注。</p>
+
+            <div class="dashboard-panel">
+                <div class="control-group">
+                    <label>对比维度</label>
+                    <select id="dim3">
+                        <option value="furnace">分炉号 (1#~8#)</option>
+                        <option value="section">分工段 (一~四工段)</option>
+                        <option value="overall">全厂加权平均</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>分析指标</label>
+                    <select id="ind3">
+                        <option value="output">产量 (吨)</option>
+                        <option value="runtime">运行时间 (小时)</option>
+                        <option value="grade">入炉品位 (%)</option>
+                        <option value="load">平均负荷 (kVA)</option>
+                        <option value="recovery">磷收率 (%)</option>
+                        <option value="pelletRate">球团占比 (%)</option>
+                        <option value="pelletConsume">磷球单耗 (t/tp)</option>
+                        <option value="cokeConsume">焦丁单耗 (t/tp)</option>
+                        <option value="powerConsume">电炉电单耗 (kWh/tp)</option>
+                        <option value="productivity">产能时效 (t/h)</option>
+                        <option value="slagP2O5">炉渣P₂O₅ (%)</option>
+                        <option value="acidity">炉渣酸度</option>
+                        <option value="cost">吨磷完全成本 (元/tp)</option>
+                    </select>
+                </div>
+                <div style="font-size:12px; background:#e9ecef; padding:6px 12px; border-radius:20px; font-family:'微软雅黑',sans-serif;">📌 红色虚线为8月上旬全厂加权均值（产量指标为算术平均）；横坐标标签红色优于均值，绿色劣于均值</div>
+            </div>
+            <div class="chart-card">
+                <div class="insight-comment" id="comment3">📊 指标点评将在此显示</div>
+                <div id="chart3"></div>
+                <div class="data-note">横坐标按8月上旬排名，标签颜色与8月上旬均值比较。</div>
+            </div>
+
+            <div class="subsection-title">关键数据明细表（7月上旬 vs 8月上旬）</div>
+            <div class="table-wrapper">
+                <table class="data-table" id="table3">
+                    <thead><tr><th>炉号/时段</th><th>产量(t)</th><th>入炉品位(%)</th><th>磷收率(%)</th><th>电单耗(kWh/tp)</th><th>磷球单耗(t/tp)</th><th>焦丁单耗(t/tp)</th><th>产能时效(t/h)</th><th>渣P₂O₅(%)</th><th>吨磷完全成本(元/tp)</th></tr></thead>
+                    <tbody id="tbody3"></tbody>
+                </table>
+            </div>
+            <div class="table-note">各单元格为"7月上旬值 / 8月上旬值"；最后一行全厂加权平均基于产量加权。</div>
+            <div class="insight-box"><strong>📌 管理启示：</strong> 收得率全面提升，原料结构优化效果显著，但成本压力来自电价上涨，需加强用电策略优化。</div>
+        </div>
+
+        <!-- ========================= TAB5: 导气管温度与产量关联 ========================= -->
+        <div id="tab5" class="tab-content">
+            <div class="section-title"></div>
+            <div style="font-size:12px; color:#5a6c7d; margin-bottom:10px;">
+                数据截止2026年8月10日 | 8#炉产量最高但低值波动极大 | 1#炉8/5数据倒置已修正
+            </div>
+
+            <!-- 温度看板内容 -->
+            <div class="temp-dashboard">
+                <!-- 图1：时均产量排序 -->
+                <div class="temp-card">
+                    <div class="card-title">① 时均产量排序（t/h）—— 高效/异常炉次标注</div>
+                    <div class="chart-box">
+                        <canvas id="yieldRankChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 图2：温度特征对比 -->
+                <div class="temp-card">
+                    <div class="card-title">② 各电炉导气管温度特征对比（8月全周期范围）</div>
+                    <div class="chart-box">
+                        <canvas id="tempRangeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 图3：8炉完整最高温度日趋势 -->
+                <div class="temp-card" style="grid-column: 1 / -1;">
+                    <div class="card-title">③ 8台电炉导气管最高温度日趋势（全周期）</div>
+                    <div class="chart-box" style="min-height:260px;">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 表4：8炉完整数据汇总 -->
+                <div class="temp-card" style="grid-column: 1 / -1;">
+                    <div class="card-title">④ 8台电炉完整数据汇总（按时均产量降序）</div>
+                    <table class="temp-data-table">
+                        <thead>
+                            <tr><th>排名</th><th>炉号</th><th>时均产量(t/h)</th><th>温度特征</th><th>异常判断</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="temp-abnormal-high"><td>1</td><td>8#</td><td>1.725</td><td>低值70~109℃（波动极大）</td><td>🟦最高产但低值异常</td></tr>
+                            <tr class="temp-high-eff"><td>2</td><td>4#</td><td>1.724</td><td>温度平稳（日较差13~29℃）</td><td>✅平稳高效标杆</td></tr>
+                            <tr class="temp-high-eff"><td>3</td><td>3#</td><td>1.719</td><td>全厂最低温（89~117℃）</td><td>✅低温高效标杆</td></tr>
+                            <tr><td>4</td><td>5#</td><td>1.687</td><td>8/5尖峰168℃</td><td>⚠️单日尖峰</td></tr>
+                            <tr><td>5</td><td>2#</td><td>1.677</td><td>低温平稳（温度正常）</td><td>⚠️温度正常但低产</td></tr>
+                            <tr><td>6</td><td>6#</td><td>1.674</td><td>持续偏高（133~164℃）</td><td>🔴持续高温</td></tr>
+                            <tr><td>7</td><td>7#</td><td>1.670</td><td>偏高（131~158℃）</td><td>🔴持续高温</td></tr>
+                            <tr><td>8</td><td>1#</td><td>1.654</td><td>8/5倒置已修正</td><td>🔴数据异常+偏低</td></tr>
+                        </tbody>
+                    </table>
+                    <div style="font-size:9px; margin-top:4px;">✅平稳高效  🔴高温异常  ⚠️单日尖峰/需另查  🟦低值异常</div>
+                </div>
+            </div>
+
+            <!-- 重点异常炉次分析 -->
+            <div class="temp-focus-box">
+                <div class="focus-title">🔍 重点异常分析（8月1-10日）</div>
+                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                    <div style="flex:1;">
+                        <strong>🟦 8#炉：最高产但低值波动极大</strong><br>
+                        • 低值70~109℃，最低70℃<br>
+                        • 时均产量1.725（全厂最高）<br>
+                        • 建议：校验测温仪表及密封性
+                    </div>
+                    <div style="flex:1;">
+                        <strong>🔴 6#、7#炉：持续偏高导致低产</strong><br>
+                        • 6#炉133~164℃，1.674<br>
+                        • 7#炉131~158℃，1.670<br>
+                        • 建议：检查电极埋深与料层
+                    </div>
+                    <div style="flex:1;">
+                        <strong>⚠️ 2#炉：温度正常但时均产量偏低</strong><br>
+                        • 温度控制良好（95~140℃）<br>
+                        • 时均产量1.677（第5）<br>
+                        • 建议：从非温度因素排查
+                    </div>
+                </div>
+                <div style="margin-top:4px; font-size:9px; color:#888;">
+                    ⚠️ 数据质量提示：1#炉8月5日高低值倒置已修正，建议加强数据录入复核。
+                </div>
+            </div>
+
+            <div class="temp-summary">
+                <div><strong>📊 核心分析结论（8月1-10日）：</strong><br>
+                    ① 3#、4#炉温度平稳高效，时均产量≥1.719，为热场稳定性标杆；<br>
+                    ② <strong>8#炉产量最高（1.725）但低值波动极大（70~109℃）</strong>，建议校验仪表与密封；<br>
+                    ③ 6#、7#炉持续偏高导致时均产量偏低（≤1.674），建议降温；<br>
+                    ④ 2#炉温度正常但时均产量偏低，需从非温度因素排查；<br>
+                    ⑤ 1#炉8月5日高低值倒置已修正，建议加强数据录入复核。
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================= TAB6: 会议备注（键盘+手写） ========================= -->
+        <div id="tab6" class="tab-content">
+            <div class="section-title"></div>
+            <div class="note-container">
+                <!-- 键盘/手写切换 -->
+                <div class="note-tabs">
+                    <button class="active" data-note-tab="keyboard">⌨️ 键盘输入</button>
+                    <button data-note-tab="handwrite">✏️ 手写输入</button>
+                </div>
+
+                <!-- 键盘输入面板 -->
+                <div class="note-panel active" id="notePanelKeyboard">
+                    <textarea id="noteTextarea" placeholder="在此输入会议记录、决议事项或待办要点..."></textarea>
+                    <div class="note-toolbar">
+                        <button id="saveNoteBtn"><i class="fas fa-save"></i> 保存备注</button>
+                        <span class="save-status" id="saveStatus">✅ 已保存</span>
+                        <span class="save-time" id="saveTime">最后保存：未保存</span>
+                    </div>
+                </div>
+
+                <!-- 手写输入面板 -->
+                <div class="note-panel" id="notePanelHandwrite">
+                    <div class="handwrite-area">
+                        <canvas id="handwriteCanvas"></canvas>
+                    </div>
+                    <div class="handwrite-tools">
+                        <button class="primary" id="clearCanvasBtn">🗑️ 清空</button>
+                        <button class="primary" id="undoCanvasBtn">↩️ 撤销</button>
+                        <button class="primary" id="saveCanvasBtn">💾 保存手写</button>
+                        <label style="font-size:13pt; display:flex; align-items:center; gap:6px;">
+                            颜色
+                            <input type="color" id="penColor" value="#1a2a3a">
+                        </label>
+                        <label style="font-size:13pt; display:flex; align-items:center; gap:6px;">
+                            粗细
+                            <input type="range" id="penSize" min="2" max="20" value="4">
+                        </label>
+                    </div>
+                    <div style="font-size:12pt; color:#4a627a; margin-top:4px;">
+                        使用手指或触控笔在画布上书写，保存后自动生成图片。
+                    </div>
+                    <div class="handwrite-preview" id="handwritePreview">
+                        <div class="empty-hint">暂未保存手写内容</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 10px; font-size: 13pt; color: #6b7a8e; font-family:'微软雅黑',sans-serif;">
+                    <i class="fas fa-info-circle"></i> 键盘和手写内容均保存在当前浏览器中，刷新或重新打开页面依然存在。
+                </div>
+            </div>
+        </div>
+
+        <footer>生产经营分析报告）</footer>
+    </div>
+
+    <script>
+        // =====================================================================
+        // 备注功能（键盘 + 手写）
+        // =====================================================================
+        (function() {
+            const STORAGE_KEY = 'report_notes_20260810';
+            const textarea = document.getElementById('noteTextarea');
+            const saveBtn = document.getElementById('saveNoteBtn');
+            const saveStatus = document.getElementById('saveStatus');
+            const saveTime = document.getElementById('saveTime');
+
+            // ----- 键盘输入 -----
+            function loadNotes() {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        textarea.value = data.content || '';
+                        if (data.time) {
+                            const d = new Date(data.time);
+                            saveTime.textContent = '最后保存：' + d.toLocaleString('zh-CN');
+                        } else {
+                            saveTime.textContent = '最后保存：未保存';
+                        }
+                        // 加载手写图片
+                        if (data.handwrite) {
+                            showHandwritePreview(data.handwrite);
+                        }
+                    } catch (e) {
+                        textarea.value = saved;
+                        saveTime.textContent = '最后保存：已加载（旧格式）';
+                    }
+                } else {
+                    saveTime.textContent = '最后保存：未保存';
+                }
+            }
+
+            function saveNotes() {
+                const content = textarea.value;
+                const data = {
+                    content: content,
+                    time: new Date().toISOString(),
+                    handwrite: handwriteData || null
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                const d = new Date();
+                saveTime.textContent = '最后保存：' + d.toLocaleString('zh-CN');
+                saveStatus.classList.add('show');
+                setTimeout(() => {
+                    saveStatus.classList.remove('show');
+                }, 3000);
+            }
+
+            // 键盘保存
+            saveBtn.addEventListener('click', saveNotes);
+            textarea.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    saveNotes();
+                }
+            });
+
+            // 键盘/手写切换
+            document.querySelectorAll('[data-note-tab]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('[data-note-tab]').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const target = this.dataset.noteTab;
+                    document.querySelectorAll('.note-panel').forEach(p => p.classList.remove('active'));
+                    if (target === 'keyboard') {
+                        document.getElementById('notePanelKeyboard').classList.add('active');
+                    } else {
+                        document.getElementById('notePanelHandwrite').classList.add('active');
+                        // 画布尺寸修正
+                        setTimeout(() => resizeCanvas(), 100);
+                    }
+                });
+            });
+
+            // ----- 手写输入 -----
+            const canvas = document.getElementById('handwriteCanvas');
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
+            let lastX = 0,
+                lastY = 0;
+            let penColor = document.getElementById('penColor').value;
+            let penSize = parseInt(document.getElementById('penSize').value);
+            let handwriteData = null; // 存储 base64 图片
+            let history = [];
+            let historyIndex = -1;
+
+            function resizeCanvas() {
+                const rect = canvas.parentElement.getBoundingClientRect();
+                const w = rect.width - 12;
+                const ratio = 9 / 16;
+                const h = w * ratio;
+                canvas.width = w;
+                canvas.height = h;
+                canvas.style.width = w + 'px';
+                canvas.style.height = h + 'px';
+                // 恢复历史
+                if (history.length > 0 && historyIndex >= 0) {
+                    const img = new Image();
+                    img.onload = () => {
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    };
+                    img.src = history[historyIndex];
+                } else {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            function getCanvasCoords(e) {
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches ? e.touches[0] : e;
+                return {
+                    x: (touch.clientX - rect.left) * (canvas.width / rect.width),
+                    y: (touch.clientY - rect.top) * (canvas.height / rect.height)
+                };
+            }
+
+            function startDrawing(e) {
+                e.preventDefault();
+                isDrawing = true;
+                const pos = getCanvasCoords(e);
+                lastX = pos.x;
+                lastY = pos.y;
+                // 开始新路径
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+            }
+
+            function draw(e) {
+                e.preventDefault();
+                if (!isDrawing) return;
+                const pos = getCanvasCoords(e);
+                ctx.lineWidth = penSize;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.strokeStyle = penColor;
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+                lastX = pos.x;
+                lastY = pos.y;
+            }
+
+            function stopDrawing(e) {
+                e.preventDefault();
+                if (isDrawing) {
+                    isDrawing = false;
+                    // 保存历史
+                    const dataUrl = canvas.toDataURL('image/png');
+                    history = history.slice(0, historyIndex + 1);
+                    history.push(dataUrl);
+                    historyIndex = history.length - 1;
+                }
+            }
+
+            // 鼠标事件
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseleave', stopDrawing);
+
+            // 触摸事件
+            canvas.addEventListener('touchstart', startDrawing, { passive: false });
+            canvas.addEventListener('touchmove', draw, { passive: false });
+            canvas.addEventListener('touchend', stopDrawing, { passive: false });
+
+            // 工具
+            document.getElementById('clearCanvasBtn').addEventListener('click', function() {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                history = [];
+                historyIndex = -1;
+                handwriteData = null;
+                document.getElementById('handwritePreview').innerHTML = '<div class="empty-hint">暂未保存手写内容</div>';
+            });
+
+            document.getElementById('undoCanvasBtn').addEventListener('click', function() {
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    const img = new Image();
+                    img.onload = () => {
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    };
+                    img.src = history[historyIndex];
+                }
+            });
+
+            document.getElementById('saveCanvasBtn').addEventListener('click', function() {
+                const dataUrl = canvas.toDataURL('image/png');
+                handwriteData = dataUrl;
+                showHandwritePreview(dataUrl);
+                // 自动保存到存储
+                const content = textarea.value;
+                const data = {
+                    content: content,
+                    time: new Date().toISOString(),
+                    handwrite: handwriteData
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                const d = new Date();
+                saveTime.textContent = '最后保存：' + d.toLocaleString('zh-CN');
+                saveStatus.classList.add('show');
+                setTimeout(() => {
+                    saveStatus.classList.remove('show');
+                }, 3000);
+            });
+
+            function showHandwritePreview(dataUrl) {
+                const container = document.getElementById('handwritePreview');
+                container.innerHTML = '<img src="' + dataUrl + '" alt="手写备注" style="max-width:100%;border:1px solid #dce3ec;border-radius:8px;">';
+            }
+
+            document.getElementById('penColor').addEventListener('input', function() {
+                penColor = this.value;
+            });
+            document.getElementById('penSize').addEventListener('input', function() {
+                penSize = parseInt(this.value);
+            });
+
+            // 初始化画布
+            setTimeout(() => resizeCanvas(), 200);
+            window.addEventListener('resize', resizeCanvas);
+
+            // 加载数据
+            loadNotes();
+
+            // 如果已有手写数据，但 canvas 未绘制，需要恢复
+            // 但 loadNotes 中若检测到 handwrite，会调用 showHandwritePreview
+            // 但画布本身需要恢复历史
+            // 在 resizeCanvas 中已处理
+
+            // 暴露保存函数给外部
+            window.saveNotes = saveNotes;
+        })();
+
+        // =====================================================================
+        // 温度看板图表初始化（使用Chart.js）
+        // =====================================================================
+        let tempChartsInited = false;
+
+        function initTempCharts() {
+            if (tempChartsInited) return;
+            try {
+                Chart.register(ChartDataLabels);
+
+                // 图1：时均产量排序
+                const ctx1 = document.getElementById('yieldRankChart').getContext('2d');
+                const furnacesSorted = ['8#', '4#', '3#', '5#', '2#', '6#', '7#', '1#'];
+                const yieldsSorted = [1.725, 1.724, 1.719, 1.687, 1.677, 1.674, 1.670, 1.654];
+                const barColors = ['#3498db', '#2ecc71', '#2ecc71', '#f39c12', '#95a5a6', '#e67e22', '#e67e22', '#e74c3c'];
+                new Chart(ctx1, {
+                    type: 'bar',
+                    data: { labels: furnacesSorted, datasets: [{ label: '时均产量 (t/h)', data: yieldsSorted,
+                            backgroundColor: barColors, borderRadius: 4 }] },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            datalabels: {
+                                anchor: 'end',
+                                align: 'top',
+                                offset: 2,
+                                font: { size: 9, weight: 'bold' },
+                                formatter: v => v.toFixed(3)
+                            }
+                        },
+                        scales: { y: { min: 1.60, max: 1.75, title: { display: true, text: 't/h' },
+                            ticks: { stepSize: 0.05 } } }
+                    }
+                });
+
+                // 图2：温度特征对比
+                const ctx2 = document.getElementById('tempRangeChart').getContext('2d');
+                const furnaces = ['1#', '2#', '3#', '4#', '5#', '6#', '7#', '8#'];
+                const lowMin = [98, 95, 89, 104, 97, 112, 94, 70];
+                const lowMax = [161, 109, 101, 118, 120, 131, 128, 109];
+                const highMin = [123, 117, 101, 129, 125, 133, 131, 120];
+                const highMax = [168, 140, 117, 145, 168, 164, 158, 150];
+                new Chart(ctx2, {
+                    type: 'line',
+                    data: {
+                        labels: furnaces,
+                        datasets: [
+                            { label: '低值范围（最小）', data: lowMin, borderColor: '#3498db',
+                                backgroundColor: 'rgba(52,152,219,0.1)', fill: '+1', tension: 0.2,
+                                pointRadius: 3 },
+                            { label: '低值范围（最大）', data: lowMax, borderColor: '#2980b9', fill: false,
+                                tension: 0.2, pointRadius: 3 },
+                            { label: '高值范围（最小）', data: highMin, borderColor: '#e74c3c',
+                            borderDash: [5, 5], tension: 0.2, pointRadius: 3 },
+                            { label: '高值范围（最大）', data: highMax, borderColor: '#c0392b',
+                            borderDash: [5, 5], tension: 0.2, pointRadius: 3 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { font: { size: 8 } } },
+                            datalabels: { display: false }
+                        },
+                        scales: { y: { min: 60, max: 180, title: { display: true, text: '温度 (℃)' } } }
+                    }
+                });
+
+                // 图3：8炉完整最高温度日趋势
+                const ctx3 = document.getElementById('trendChart').getContext('2d');
+                const dates = ['8/1', '8/2', '8/3', '8/4', '8/5', '8/6', '8/7', '8/8', '8/9', '8/10'];
+                const high1 = [163, 162, 153, 168, 161, 166, 152, 123, 162, 150];
+                const high2 = [117, 125, 122, 131, 132, 131, 124, 128, 119, 140];
+                const high3 = [113, 115, 102, 117, 109, 109, 113, 108, 101, 116];
+                const high4 = [135, 136, 145, 135, 139, 136, 129, 131, 130, 133];
+                const high5 = [136, 133, 130, 135, 168, 137, 135, 132, 127, 125];
+                const high6 = [164, 161, 150, 151, 133, 156, 162, 162, 156, 150];
+                const high7 = [131, 132, 154, 145, 152, 142, 155, 158, 144, 147];
+                const high8 = [134, 130, 138, 120, 136, 150, 124, 126, 121, 145];
+                new Chart(ctx3, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [
+                            { label: '1#炉', data: high1, borderColor: '#1a5276', borderWidth: 1.5,
+                                pointRadius: 2, tension: 0.2 },
+                            { label: '2#炉', data: high2, borderColor: '#2e86c1', borderWidth: 1.5,
+                                pointRadius: 2, tension: 0.2 },
+                            { label: '3#炉', data: high3, borderColor: '#28b463', borderWidth: 2,
+                                pointRadius: 2, tension: 0.2 },
+                            { label: '4#炉', data: high4, borderColor: '#1e8449', borderWidth: 2,
+                                pointRadius: 2, tension: 0.2 },
+                            { label: '5#炉', data: high5, borderColor: '#f39c12', borderWidth: 2,
+                                pointRadius: 3, tension: 0.2 },
+                            { label: '6#炉', data: high6, borderColor: '#d35400', borderWidth: 1.5,
+                                pointRadius: 2, tension: 0.2 },
+                            { label: '7#炉', data: high7, borderColor: '#e74c3c', borderWidth: 1.5,
+                                pointRadius: 2, tension: 0.2 },
+                            { label: '8#炉', data: high8, borderColor: '#3498db', borderWidth: 2,
+                                pointRadius: 3, tension: 0.2, borderDash: [4, 4] }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { font: { size: 8 }, boxWidth: 12, padding: 4, usePointStyle: true,
+                                    pointStyle: 'circle' }
+                            },
+                            datalabels: { display: false },
+                            tooltip: { mode: 'index' }
+                        },
+                        scales: {
+                            y: { min: 80, max: 180, title: { display: true, text: '温度 (℃)' },
+                                ticks: { stepSize: 20 } },
+                            x: { ticks: { font: { size: 8 } } }
+                        }
+                    }
+                });
+
+                tempChartsInited = true;
+            } catch (e) {
+                console.warn('温度图表初始化失败:', e);
+            }
+        }
+
+        // =====================================================================
+        // 数据定义（全部从最新Excel中提取）
+        // =====================================================================
+
+        // 7月全月（7月1日-31日）
+        const julyFull = {
+            output: [1299.3, 1317.7, 1373.0, 1361.0, 1334.9, 1332.7, 1324.5, 1349.9],
+            runtime: [728.88, 733.02, 731.63, 725.28, 723.38, 736.65, 705.48, 729.36],
+            grade: [22.705, 22.705, 22.705, 22.705, 22.704, 22.704, 22.704, 22.704],
+            load: [26607, 26527, 27779, 27827, 26964, 26479, 28045, 27802],
+            recovery: [84.96, 85.76, 84.32, 84.25, 84.52, 86.84, 82.22, 83.63],
+            pelletRate: [8.59, 8.49, 8.45, 8.39, 9.27, 9.26, 9.17, 9.16],
+            pelletConsume: [12.11, 12.00, 12.20, 12.20, 12.17, 11.84, 12.51, 12.30],
+            cokeConsume: [1.56, 1.55, 1.58, 1.58, 1.57, 1.53, 1.60, 1.58],
+            powerConsume: [14926, 14757, 14803, 14829, 14612, 14636, 14938, 15022],
+            productivity: [1.783, 1.798, 1.877, 1.877, 1.845, 1.809, 1.877, 1.851],
+            slagP2O5: [2.056, 1.802, 1.693, 1.556, 1.417, 1.310, 1.525, 1.484],
+            acidity: [0.843, 0.847, 0.848, 0.851, 0.851, 0.855, 0.858, 0.851],
+            cost: [25530.96, 25304.83, 25559.60, 25574.00, 25445.91, 24998.90, 26029.84, 25712.91]
+        };
+
+        // 8月上旬（8月1日-10日）
+        const augFirst = {
+            output: [383.3, 385.4, 397.4, 411.5, 385.3, 381.2, 398.8, 411.8],
+            runtime: [231.74, 229.84, 231.23, 238.62, 228.31, 227.67, 238.82, 238.68],
+            grade: [22.61, 22.61, 22.61, 22.61, 22.61, 22.61, 22.61, 22.61],
+            load: [24544, 24549, 25694, 25208, 24586, 24815, 24845, 25725],
+            recovery: [86.10, 87.16, 83.48, 85.48, 87.01, 86.94, 83.95, 86.95],
+            pelletRate: [6.41, 6.43, 6.46, 6.73, 7.61, 7.83, 7.56, 7.56],
+            pelletConsume: [12.04, 11.90, 12.42, 12.13, 11.93, 11.94, 12.37, 11.94],
+            cokeConsume: [1.63, 1.61, 1.68, 1.68, 1.60, 1.61, 1.66, 1.60],
+            powerConsume: [14839, 14640, 14950, 14618, 14569, 14821, 14878, 14910],
+            productivity: [1.654, 1.677, 1.719, 1.724, 1.688, 1.674, 1.670, 1.725],
+            slagP2O5: [1.499, 1.508, 1.790, 1.610, 1.531, 1.299, 1.223, 1.347],
+            acidity: [0.856, 0.855, 0.842, 0.844, 0.857, 0.852, 0.845, 0.844],
+            cost: [25669.97, 25279.28, 26079.69, 25621.70, 25016.28, 25316.58, 25986.54, 25398.30]
+        };
+
+        // 7月上旬
+        const julyFirst = {
+            output: [403.1, 408.5, 437.0, 428.0, 430.7, 426.8, 426.9, 437.8],
+            runtime: [231.51, 231.94, 231.82, 225.55, 221.86, 236.41, 231.99, 235.44],
+            grade: [22.69, 22.69, 22.69, 22.69, 22.69, 22.69, 22.69, 22.69],
+            load: [27003, 26879, 27699, 27968, 28202, 26379, 27758, 28027],
+            recovery: [81.39, 82.81, 85.05, 85.28, 84.77, 87.33, 81.48, 83.13],
+            pelletRate: [12.76, 12.70, 12.59, 12.44, 12.21, 12.37, 12.18, 12.08],
+            pelletConsume: [12.62, 12.40, 12.08, 12.04, 12.10, 11.75, 12.59, 12.34],
+            cokeConsume: [1.64, 1.61, 1.58, 1.57, 1.57, 1.53, 1.63, 1.60],
+            powerConsume: [15509, 15262, 14694, 14739, 14527, 14612, 15085, 15072],
+            productivity: [1.74, 1.76, 1.89, 1.90, 1.94, 1.81, 1.84, 1.86],
+            slagP2O5: [1.865, 1.575, 1.417, 1.627, 1.474, 1.337, 1.406, 1.587],
+            acidity: [0.856, 0.867, 0.868, 0.863, 0.837, 0.845, 0.847, 0.833],
+            cost: [25912.41, 25429.17, 24684.78, 24686.07, 24634.14, 24305.15, 25614.24, 25155.06]
+        };
+
+        // 7月中旬
+        const julyMid = {
+            output: [422.8, 433.0, 449.0, 445.4, 430.8, 430.8, 428.4, 423.4],
+            runtime: [235.24, 239.02, 237.14, 236.42, 239.08, 238.55, 226.55, 230.85],
+            grade: [22.76, 22.76, 22.76, 22.76, 22.76, 22.76, 22.76, 22.76],
+            load: [26454, 26467, 27823, 27743, 26446, 26491, 28072, 27718],
+            recovery: [85.93, 86.64, 84.46, 83.33, 85.20, 86.76, 82.90, 82.46],
+            pelletRate: [8.61, 8.48, 8.39, 8.57, 9.78, 9.69, 9.62, 9.65],
+            pelletConsume: [11.92, 11.82, 12.13, 12.29, 12.05, 11.83, 12.38, 12.45],
+            cokeConsume: [1.52, 1.51, 1.55, 1.58, 1.53, 1.51, 1.57, 1.58],
+            powerConsume: [14719, 14610, 14695, 14726, 14677, 14669, 14845, 15113],
+            productivity: [1.797, 1.812, 1.893, 1.884, 1.802, 1.806, 1.891, 1.834],
+            slagP2O5: [1.905, 1.787, 1.695, 1.354, 1.139, 0.971, 1.717, 1.580],
+            acidity: [0.860, 0.860, 0.869, 0.869, 0.870, 0.874, 0.885, 0.881],
+            cost: [25106.28, 24846.20, 24712.31, 24890.18, 24617.26, 24302.29, 25306.34, 25216.25]
+        };
+
+        // 7月下旬
+        const julyLast = {
+            output: [473.4, 476.2, 487.0, 487.6, 473.4, 475.1, 469.2, 488.7],
+            runtime: [262.13, 262.06, 262.67, 263.31, 262.44, 261.69, 246.94, 263.07],
+            grade: [22.668, 22.668, 22.668, 22.668, 22.667, 22.667, 22.667, 22.667],
+            load: [26394, 26271, 27810, 27780, 26388, 26557, 28291, 27675],
+            recovery: [87.32, 87.60, 83.52, 84.20, 83.66, 86.45, 82.28, 85.11],
+            pelletRate: [4.78, 4.69, 4.87, 4.72, 6.18, 6.11, 6.00, 6.06],
+            pelletConsume: [11.83, 11.79, 12.37, 12.27, 12.33, 11.93, 12.53, 12.12],
+            cokeConsume: [1.53, 1.53, 1.60, 1.58, 1.59, 1.54, 1.61, 1.56],
+            powerConsume: [14615, 14457, 15000, 15002, 14629, 14628, 14889, 14898],
+            productivity: [1.806, 1.817, 1.854, 1.852, 1.804, 1.816, 1.900, 1.858],
+            slagP2O5: [2.366, 2.021, 1.917, 1.675, 1.619, 1.595, 1.457, 1.295],
+            acidity: [0.810, 0.820, 0.810, 0.820, 0.850, 0.850, 0.840, 0.840],
+            cost: [25530.96, 25304.83, 25559.60, 25574.00, 25445.91, 24998.90, 26029.84, 25712.91]
+        };
+
+        // =====================================================================
+        // 工具函数（ECharts部分）
+        // =====================================================================
+        const HIGH_FIRST = ['output', 'runtime', 'load', 'recovery', 'pelletRate', 'productivity'];
+
+        function formatVal(value, indicator) {
+            if (value === null || value === undefined || !isFinite(value)) return '-';
+            if (indicator === 'output' || indicator === 'runtime') return value.toFixed(1);
+            if (indicator === 'load') return value.toFixed(0);
+            if (indicator === 'grade' || indicator === 'recovery' || indicator === 'pelletRate' ||
+                indicator === 'slagP2O5' || indicator === 'acidity') return value.toFixed(2);
+            if (indicator === 'pelletConsume' || indicator === 'cokeConsume') return value.toFixed(2);
+            if (indicator === 'powerConsume') return value.toFixed(0);
+            if (indicator === 'productivity') return value.toFixed(2);
+            if (indicator === 'cost') return value.toFixed(0);
+            return value.toFixed(2);
+        }
+
+        function getWeightedAvg(dataObj, indicator) {
+            if (indicator === 'output') {
+                const arr = dataObj.output;
+                return arr.reduce((a, b) => a + b, 0) / arr.length;
+            }
+            const vals = dataObj[indicator];
+            const outs = dataObj.output;
+            let totalOut = 0,
+                totalVal = 0;
+            for (let i = 0; i < outs.length; i++) {
+                totalOut += outs[i];
+                totalVal += vals[i] * outs[i];
+            }
+            return totalOut > 0 ? totalVal / totalOut : 0;
+        }
+
+        function sectionAgg(dataObj, indicator) {
+            const groups = [
+                [0, 1],
+                [2, 3],
+                [4, 5],
+                [6, 7]
+            ];
+            const vals = dataObj[indicator];
+            const outs = dataObj.output;
+            return groups.map(g => {
+                let to = 0,
+                    tv = 0;
+                g.forEach(i => { to += outs[i];
+                    tv += vals[i] * outs[i]; });
+                return to > 0 ? tv / to : 0;
+            });
+        }
+
+        function generateComment(dataArray, indicator, dim, periodNames) {
+            const nameMap = {
+                output: '产量',
+                runtime: '运行时间',
+                grade: '入炉品位',
+                load: '平均负荷',
+                recovery: '磷收率',
+                pelletRate: '球团占比',
+                pelletConsume: '磷球单耗',
+                cokeConsume: '焦丁单耗',
+                powerConsume: '电炉电单耗',
+                productivity: '产能时效',
+                slagP2O5: '炉渣P₂O₅',
+                acidity: '炉渣酸度',
+                cost: '吨磷完全成本'
+            };
+            const unitMap = {
+                output: '吨',
+                runtime: '小时',
+                grade: '%',
+                load: 'kVA',
+                recovery: '%',
+                pelletRate: '%',
+                pelletConsume: 't/tp',
+                cokeConsume: 't/tp',
+                powerConsume: 'kWh/tp',
+                productivity: 't/h',
+                slagP2O5: '%',
+                acidity: ' ',
+                cost: '元/tp'
+            };
+            const name = nameMap[indicator] || indicator;
+            const unit = unitMap[indicator] || '';
+
+            const vals = dataArray.map(d => {
+                if (indicator === 'output') {
+                    const arr = d.output;
+                    return arr.reduce((a, b) => a + b, 0) / arr.length;
+                }
+                return getWeightedAvg(d, indicator);
+            });
+
+            const firstVal = vals[0];
+            const lastVal = vals[vals.length - 1];
+            const diff = lastVal - firstVal;
+            const pct = firstVal !== 0 ? (diff / firstVal) * 100 : 0;
+
+            let trendClass = 'trend-flat',
+                sign = '持平';
+            if (Math.abs(diff) < 0.001) { trendClass = 'trend-flat';
+                sign = '基本持平'; } else if (diff > 0) { trendClass = 'trend-up';
+                sign = '上升'; } else { trendClass = 'trend-down';
+                sign = '下降'; }
+
+            const firstStr = formatVal(firstVal, indicator);
+            const lastStr = formatVal(lastVal, indicator);
+            let diffStr = '';
+            if (indicator === 'output' || indicator === 'runtime' || indicator === 'load' || indicator === 'powerConsume' ||
+                indicator === 'cost') diffStr = Math.abs(diff).toFixed(1);
+            else if (indicator === 'grade' || indicator === 'recovery' || indicator === 'pelletRate' ||
+                indicator === 'slagP2O5' || indicator === 'acidity') diffStr = Math.abs(diff).toFixed(2);
+            else if (indicator === 'pelletConsume' || indicator === 'cokeConsume' || indicator === 'productivity') diffStr =
+                Math.abs(diff).toFixed(2);
+            else diffStr = Math.abs(diff).toFixed(2);
+
+            let changeText = `${sign} ${diffStr} ${unit}`;
+            if (indicator !== 'acidity' && Math.abs(pct) > 0.01) changeText += `（${pct.toFixed(1)}%）`;
+            let mainText = `<strong>${name}</strong>：${firstStr} ${unit} → ${lastStr} ${unit}，<span class="${trendClass}">${changeText}</span>`;
+
+            if (dim === 'overall') return '📊 ' + mainText;
+
+            let labels = [],
+                firstVals = [],
+                lastVals = [];
+            if (dim === 'furnace') {
+                labels = ['1#', '2#', '3#', '4#', '5#', '6#', '7#', '8#'];
+                firstVals = dataArray[0][indicator];
+                lastVals = dataArray[dataArray.length - 1][indicator];
+            } else if (dim === 'section') {
+                labels = ['一工段', '二工段', '三工段', '四工段'];
+                firstVals = sectionAgg(dataArray[0], indicator);
+                lastVals = sectionAgg(dataArray[dataArray.length - 1], indicator);
+            }
+
+            let changes = labels.map((label, i) => {
+                let diffVal = lastVals[i] - firstVals[i];
+                let pctVal = (firstVals[i] !== 0) ? (diffVal / firstVals[i]) * 100 : 0;
+                return { label, diff: diffVal, pct: pctVal };
+            });
+
+            changes.sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff));
+
+            let detailParts = [];
+            changes.forEach(item => {
+                if (Math.abs(item.diff) < 0.001) {
+                    detailParts.push(`${item.label}炉持平`);
+                } else {
+                    let dir = item.diff > 0 ? '↑' : '↓';
+                    let absDiff = Math.abs(item.diff);
+                    let diffStr2 = '';
+                    if (indicator === 'output' || indicator === 'runtime' || indicator === 'load' || indicator ===
+                        'powerConsume' || indicator === 'cost') diffStr2 = absDiff.toFixed(1);
+                    else if (indicator === 'grade' || indicator === 'recovery' || indicator === 'pelletRate' ||
+                        indicator === 'slagP2O5' || indicator === 'acidity') diffStr2 = absDiff.toFixed(2);
+                    else if (indicator === 'pelletConsume' || indicator === 'cokeConsume' || indicator ===
+                        'productivity') diffStr2 = absDiff.toFixed(2);
+                    else diffStr2 = absDiff.toFixed(2);
+                    let pctStr = Math.abs(item.pct).toFixed(1);
+                    let color = dir === '↑' ? 'red' : 'green';
+                    let symbolHtml = `<span style="color:${color};font-weight:bold;">${dir}</span>`;
+                    let changeDesc = `${symbolHtml}${diffStr2}${unit}`;
+                    if (indicator !== 'acidity' && Math.abs(item.pct) > 0.01) changeDesc += `（幅度${pctStr}%）`;
+                    detailParts.push(`${item.label}炉${changeDesc}`);
+                }
+            });
+
+            let detailText = '；分炉看：' + detailParts.join('、');
+            return '📊 ' + mainText + detailText;
+        }
+
+        // =====================================================================
+        // ECharts 图表渲染
+        // =====================================================================
+        function renderChart(domId, dataArray, dimSelectId, indSelectId, commentId, periodNames) {
+            const dim = document.getElementById(dimSelectId).value;
+            const ind = document.getElementById(indSelectId).value;
+
+            const commentEl = document.getElementById(commentId);
+            if (commentEl) {
+                commentEl.innerHTML = generateComment(dataArray, ind, dim, periodNames);
+            }
+
+            const yNameMap = {
+                output: '产量 (吨)',
+                runtime: '运行时间 (h)',
+                grade: '入炉品位 (%)',
+                load: '平均负荷 (kVA)',
+                recovery: '磷收率 (%)',
+                pelletRate: '球团占比 (%)',
+                pelletConsume: '磷球单耗 (t/tp)',
+                cokeConsume: '焦丁单耗 (t/tp)',
+                powerConsume: '电炉电单耗 (kWh/tp)',
+                productivity: '产能时效 (t/h)',
+                slagP2O5: '炉渣P₂O₅ (%)',
+                acidity: '炉渣酸度',
+                cost: '吨磷完全成本 (元/tp)'
+            };
+
+            let rawLabels = [];
+            let allData = dataArray.map(d => d[ind]);
+            if (dim === 'furnace') {
+                rawLabels = ['1#', '2#', '3#', '4#', '5#', '6#', '7#', '8#'];
+            } else if (dim === 'section') {
+                rawLabels = ['一工段', '二工段', '三工段', '四工段'];
+                allData = dataArray.map(d => sectionAgg(d, ind));
+            } else {
+                rawLabels = ['全厂加权平均'];
+                const singleVal = (d) => {
+                    if (ind === 'output') return d.output.reduce((a, b) => a + b, 0) / d.output.length;
+                    return getWeightedAvg(d, ind);
+                };
+                allData = dataArray.map(d => [singleVal(d)]);
+            }
+
+            const lastData = allData[allData.length - 1];
+            const isHighFirst = HIGH_FIRST.includes(ind);
+            const indexed = lastData.map((v, i) => ({ value: v, index: i }));
+            indexed.sort((a, b) => {
+                if (isHighFirst) return b.value - a.value;
+                else return a.value - b.value;
+            });
+            const sortedIndices = indexed.map(item => item.index);
+
+            let sortedLabels = sortedIndices.map(idx => {
+                let label = rawLabels[idx];
+                if (dim === 'furnace') label = label + '炉';
+                return label;
+            });
+            let xAxis = sortedLabels.map((label, pos) => `第${pos+1}名(${label})`);
+
+            let sortedData = allData.map(periodVals => {
+                return sortedIndices.map(idx => periodVals[idx]);
+            });
+
+            const lastPeriodVals = sortedData[sortedData.length - 1];
+            let refLine = null;
+            if (dim !== 'overall') {
+                if (ind === 'output') {
+                    refLine = lastPeriodVals.reduce((a, b) => a + b, 0) / lastPeriodVals.length;
+                } else {
+                    const lastOutputs = sortedIndices.map(idx => {
+                        const outArr = dataArray[dataArray.length - 1].output;
+                        return outArr[idx];
+                    });
+                    let totalOut = lastOutputs.reduce((a, b) => a + b, 0);
+                    let totalVal = lastPeriodVals.reduce((sum, v, i) => sum + v * lastOutputs[i], 0);
+                    refLine = totalOut > 0 ? totalVal / totalOut : 0;
+                }
+            }
+
+            let labelColors = [];
+            if (dim !== 'overall') {
+                const currentVals = lastPeriodVals;
+                const ref = refLine;
+                labelColors = currentVals.map(v => {
+                    if (isHighFirst) {
+                        return v >= ref ? 'red' : 'green';
+                    } else {
+                        return v <= ref ? 'red' : 'green';
+                    }
+                });
+            }
+
+            const colors = ['#3b82b6', '#10b981', '#f39c12', '#8e44ad'];
+            let series = [];
+            let legendData = [];
+
+            sortedData.forEach((periodVals, periodIdx) => {
+                const periodName = periodNames[periodIdx] || `期间${periodIdx+1}`;
+                const color = colors[periodIdx % colors.length];
+                let dataItems = periodVals.map((v, i) => {
+                    let itemStyle = { color: color };
+                    if (periodIdx === sortedData.length - 1 && refLine !== null && dim !== 'overall') {
+                        if (isHighFirst) {
+                            itemStyle.color = v >= refLine ? '#d32f2f' : '#2e7d32';
+                        } else {
+                            itemStyle.color = v <= refLine ? '#d32f2f' : '#2e7d32';
+                        }
+                    }
+                    return { value: v, itemStyle: itemStyle };
+                });
+
+                const labelFormatter = function(params) {
+                    const d = params.data;
+                    if (!d || d.value === undefined || d.value === null) return '';
+                    return '{value|' + formatVal(d.value, ind) + '}';
+                };
+
+                series.push({
+                    name: periodName,
+                    type: 'bar',
+                    data: dataItems,
+                    itemStyle: { borderRadius: [6, 6, 0, 0] },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        formatter: labelFormatter,
+                        rich: {
+                            value: {
+                                color: '#1a2a3a',
+                                fontSize: 14,
+                                fontWeight: 'bold',
+                                lineHeight: 20,
+                                fontFamily: '微软雅黑, PingFang SC, sans-serif'
+                            }
+                        },
+                        fontSize: 14,
+                        fontWeight: 'bold'
+                    }
+                });
+                legendData.push(periodName);
+            });
+
+            if (refLine !== null && dim !== 'overall') {
+                const lineName = periodNames[periodNames.length - 1] + '均值';
+                series.push({
+                    name: lineName,
+                    type: 'line',
+                    data: new Array(xAxis.length).fill(refLine),
+                    lineStyle: { color: '#e34234', width: 2, type: 'dashed' },
+                    symbol: 'none',
+                    label: {
+                        show: true,
+                        position: 'right',
+                        color: '#e34234',
+                        fontWeight: 'bold',
+                        fontSize: 12,
+                        fontFamily: '微软雅黑, PingFang SC, sans-serif',
+                        formatter: function() { return refLine.toFixed(2); }
+                    }
+                });
+                legendData.push(lineName);
+            }
+
+            const dom = document.getElementById(domId);
+            if (!dom) return;
+            let chart = echarts.getInstanceByDom(dom);
+            if (chart) chart.dispose();
+            chart = echarts.init(dom);
+
+            chart.setOption({
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    valueFormatter: function(v) {
+                        if (v === null || v === undefined || !isFinite(v)) return '-';
+                        return v.toFixed(2);
+                    }
+                },
+                legend: {
+                    data: legendData,
+                    left: 'left',
+                    textStyle: { fontFamily: '微软雅黑, PingFang SC, sans-serif', fontSize: 13 }
+                },
+                grid: {
+                    left: '10%',
+                    right: '10%',
+                    top: 80,
+                    bottom: '5%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: xAxis,
+                    position: 'top',
+                    axisLabel: {
+                        rotate: 0,
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        color: '#1a2a3a',
+                        margin: 12,
+                        interval: 0,
+                        fontFamily: '微软雅黑, PingFang SC, sans-serif',
+                        rich: {
+                            label: { backgroundColor: '#e8edf3', borderRadius: 6, padding: [2, 8, 2, 8],
+                                fontSize: 16, fontWeight: 'bold', color: '#1a2a3a', borderColor: '#b0c4d9',
+                                borderWidth: 1 },
+                            redLabel: { backgroundColor: '#e8edf3', borderRadius: 6, padding: [2, 8, 2, 8],
+                                fontSize: 16, fontWeight: 'bold', color: '#d32f2f', borderColor: '#b0c4d9',
+                                borderWidth: 1 },
+                            greenLabel: { backgroundColor: '#e8edf3', borderRadius: 6, padding: [2, 8, 2, 8],
+                                fontSize: 16, fontWeight: 'bold', color: '#2e7d32', borderColor: '#b0c4d9',
+                                borderWidth: 1 }
+                        },
+                        formatter: function(value, index) {
+                            if (labelColors && labelColors[index]) {
+                                const colorKey = labelColors[index] === 'red' ? 'redLabel' : 'greenLabel';
+                                return '{' + colorKey + '|' + value + '}';
+                            }
+                            return '{label|' + value + '}';
+                        }
+                    },
+                    axisLine: { show: true },
+                    axisTick: { alignWithLabel: true }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: yNameMap[ind] || '指标值',
+                    nameLocation: 'middle',
+                    nameGap: 35,
+                    nameTextStyle: { fontWeight: 'bold', fontSize: 13, fontFamily: '微软雅黑, PingFang SC, sans-serif' }
+                },
+                series: series
+            });
+
+            window.addEventListener('resize', function() { try { chart.resize(); } catch (e) {} });
+            return chart;
+        }
+
+        // =====================================================================
+        // 填充表格
+        // =====================================================================
+        function fillTable(tbodyId, dataArray, periodNames) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+            let html = '';
+            const indicators = ['output', 'grade', 'recovery', 'powerConsume', 'pelletConsume', 'cokeConsume', 'productivity',
+                'slagP2O5', 'cost'
+            ];
+            for (let i = 0; i < 8; i++) {
+                html += '<tr><td><strong>' + (i + 1) + '#炉</strong></td>';
+                indicators.forEach(ind => {
+                    let cell = '';
+                    dataArray.forEach((d, idx) => {
+                        let val = d[ind][i];
+                        let str = typeof val === 'number' ? val.toFixed(ind === 'cost' || ind ===
+                            'powerConsume' || ind === 'load' ? 0 : 2) : val;
+                        cell += str;
+                        if (idx < dataArray.length - 1) cell += ' / ';
+                    });
+                    html += '<td>' + cell + '</td>';
+                });
+                html += '</tr>';
+            }
+            html += '<tr style="background:#f2f6fc;font-weight:bold;"><td>⚙️ 全厂加权</td>';
+            indicators.forEach(ind => {
+                let cell = '';
+                dataArray.forEach((d, idx) => {
+                    let avg;
+                    if (ind === 'output') {
+                        avg = d.output.reduce((a, b) => a + b, 0) / d.output.length;
+                    } else {
+                        avg = getWeightedAvg(d, ind);
+                    }
+                    let str = typeof avg === 'number' ? avg.toFixed(ind === 'cost' || ind ===
+                        'powerConsume' || ind === 'load' ? 0 : 2) : avg;
+                    cell += str;
+                    if (idx < dataArray.length - 1) cell += ' / ';
+                });
+                html += '<td>' + cell + '</td>';
+            });
+            html += '</tr>';
+            tbody.innerHTML = html;
+        }
+
+        // =====================================================================
+        // 初始化
+        // =====================================================================
+        function initAll() {
+            // Tab1: 7月全月 vs 8月上旬
+            renderChart('chart1', [julyFull, augFirst], 'dim1', 'ind1', 'comment1', ['7月全月', '8月上旬']);
+            fillTable('tbody1', [julyFull, augFirst], ['7月全月', '8月上旬']);
+
+            // Tab2: 7月上旬→中旬→下旬→8月上旬
+            renderChart('chart2', [julyFirst, julyMid, julyLast, augFirst], 'dim2', 'ind2', 'comment2', ['7月上旬',
+                '7月中旬', '7月下旬', '8月上旬'
+            ]);
+            fillTable('tbody2', [julyFirst, julyMid, julyLast, augFirst], ['7月上旬', '7月中旬', '7月下旬', '8月上旬']);
+
+            // Tab3: 7月上旬 vs 8月上旬
+            renderChart('chart3', [julyFirst, augFirst], 'dim3', 'ind3', 'comment3', ['7月上旬', '8月上旬']);
+            fillTable('tbody3', [julyFirst, augFirst], ['7月上旬', '8月上旬']);
+        }
+
+        // 温度图表在第一次切换到tab5时初始化
+        let tempInitDone = false;
+
+        function initTempOnShow() {
+            if (!tempInitDone) {
+                setTimeout(() => {
+                    initTempCharts();
+                    tempInitDone = true;
+                }, 200);
+            }
+        }
+
+        // =====================================================================
+        // 经济性报告内部选项卡切换
+        // =====================================================================
+        document.querySelectorAll('.eco-tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.eco-tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const target = this.dataset.target;
+                document.querySelectorAll('.eco-tab-content').forEach(c => c.classList.remove('active'));
+                const el = document.getElementById(target);
+                if (el) el.classList.add('active');
+            });
+        });
+
+        // 默认激活第一个经济性标签
+        (function() {
+            const first = document.querySelector('.eco-tab-content');
+            if (first) first.classList.add('active');
+            const firstBtn = document.querySelector('.eco-tab-btn');
+            if (firstBtn) firstBtn.classList.add('active');
+        })();
+
+        // =====================================================================
+        // 主选项卡切换事件
+        // =====================================================================
+        document.querySelectorAll('.tab-bar .tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-bar .tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                const tabId = this.dataset.tab;
+                document.getElementById(tabId).classList.add('active');
+
+                if (tabId === 'tab5') {
+                    initTempOnShow();
+                }
+
+                setTimeout(() => {
+                    if (tabId === 'tab2') {
+                        renderChart('chart1', [julyFull, augFirst], 'dim1', 'ind1', 'comment1', ['7月全月',
+                            '8月上旬'
+                        ]);
+                    } else if (tabId === 'tab3') {
+                        renderChart('chart2', [julyFirst, julyMid, julyLast, augFirst], 'dim2', 'ind2',
+                            'comment2', ['7月上旬', '7月中旬', '7月下旬', '8月上旬']);
+                    } else if (tabId === 'tab4') {
+                        renderChart('chart3', [julyFirst, augFirst], 'dim3', 'ind3', 'comment3', ['7月上旬',
+                            '8月上旬'
+                        ]);
+                    }
+                }, 100);
+            });
+        });
+
+        // 维度/指标变化事件
+        document.getElementById('dim1').addEventListener('change', function() {
+            renderChart('chart1', [julyFull, augFirst], 'dim1', 'ind1', 'comment1', ['7月全月', '8月上旬']);
+        });
+        document.getElementById('ind1').addEventListener('change', function() {
+            renderChart('chart1', [julyFull, augFirst], 'dim1', 'ind1', 'comment1', ['7月全月', '8月上旬']);
+        });
+        document.getElementById('dim2').addEventListener('change', function() {
+            renderChart('chart2', [julyFirst, julyMid, julyLast, augFirst], 'dim2', 'ind2', 'comment2', ['7月上旬',
+                '7月中旬', '7月下旬', '8月上旬'
+            ]);
+        });
+        document.getElementById('ind2').addEventListener('change', function() {
+            renderChart('chart2', [julyFirst, julyMid, julyLast, augFirst], 'dim2', 'ind2', 'comment2', ['7月上旬',
+                '7月中旬', '7月下旬', '8月上旬'
+            ]);
+        });
+        document.getElementById('dim3').addEventListener('change', function() {
+            renderChart('chart3', [julyFirst, augFirst], 'dim3', 'ind3', 'comment3', ['7月上旬', '8月上旬']);
+        });
+        document.getElementById('ind3').addEventListener('change', function() {
+            renderChart('chart3', [julyFirst, augFirst], 'dim3', 'ind3', 'comment3', ['7月上旬', '8月上旬']);
+        });
+
+        window.onload = function() {
+            initAll();
+            // 如果默认温度标签可见（不是），但一般不可见
+        };
+    </script>
+</body>
+</html>
